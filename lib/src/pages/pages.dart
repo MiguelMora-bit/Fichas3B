@@ -1,0 +1,11 @@
+export 'package:fichas/src/pages/croquis_foto.dart';
+export 'package:fichas/src/pages/datos_generales_page.dart';
+export 'package:fichas/src/pages/datos_local_page.dart';
+export 'package:fichas/src/pages/home.dart';
+export 'package:fichas/src/pages/ubicacion_sitio.dart';
+export 'package:fichas/src/pages/generadores_page.dart';
+export 'package:fichas/src/pages/competencias.dart';
+export 'package:fichas/src/pages/conteo.dart';
+export 'package:fichas/src/pages/fortalezas_debilidades_page.dart';
+export 'package:fichas/src/pages/finalizar.dart';
+export 'package:fichas/src/pages/agregar_conteo.dart';
