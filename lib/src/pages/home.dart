@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _boton() {
-    return Column(
+    return ListView(
       children: [
         _separador(),
         _logo(),
@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _separador() {
     return Container(
-      height: 90,
+      height: 50,
     );
   }
 

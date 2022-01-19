@@ -39,20 +39,34 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
           ],
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-        children: [
-          _contruirSeparador(),
-          competenciasProvider.competencias.isEmpty
-              ? const Center(child: Text("No hay competidores"))
-              : Column(
-                  children: [
-                    ..._crearItems(competenciasProvider),
-                    _boton(),
-                  ],
+      body: competenciasProvider.competencias.isEmpty
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Expanded(
+                  child: Center(
+                    child: Text(
+                      "No hay competidores",
+                      style:
+                          TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
+                    ),
+                  ),
                 ),
-        ],
-      ),
+                _boton(competenciasProvider),
+                const SizedBox(
+                  height: 100,
+                )
+              ],
+            )
+          : ListView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+              children: [
+                _contruirSeparador(),
+                ..._crearItems(competenciasProvider),
+                _boton(competenciasProvider)
+              ],
+            ),
       floatingActionButton: _botonAgregar(competenciasProvider),
     );
   }
@@ -116,7 +130,7 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
     );
   }
 
-  Widget _boton() {
+  Widget _boton(CompetenciasProvider competenciasProvider) {
     return Center(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -126,7 +140,12 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
         onPressed: () {
+          if (competenciasProvider.competencias.isEmpty) {
+            return displayDialogConfirmation();
+          }
+
           Navigator.pushReplacementNamed(context, "conteos");
+          _displayIntructions();
         },
         child: const Text("SIGUIENTE"),
       ),
@@ -188,6 +207,80 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
                     Navigator.pop(context);
                   },
                   child: const Text('Agregar'))
+            ],
+          );
+        });
+  }
+
+  void displayDialogConfirmation() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(child: Text('Confirmación')),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text('¿No hay competidores?'),
+                SizedBox(height: 30),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, "conteos");
+                    _displayIntructions();
+                  },
+                  child: const Text('Aceptar')),
+            ],
+          );
+        });
+  }
+
+  void _displayIntructions() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(child: Text('Instrucciones')),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  'Registra el número de posibles clientes',
+                  style: TextStyle(fontSize: 17),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Mínimo 2 conteos',
+                  style: TextStyle(fontSize: 17),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Cada conteo dura 10 minutos',
+                  style: TextStyle(fontSize: 17),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Aceptar'))
             ],
           );
         });

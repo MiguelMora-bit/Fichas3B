@@ -197,6 +197,7 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
           if (metrosCuadrados < 400) return _displayDialogAndroid();
 
           Navigator.pushReplacementNamed(context, "generadores");
+          _displayIntructions();
         },
         child: const Text("SIGUIENTE"),
       ),
@@ -222,6 +223,41 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 30),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Aceptar'))
+            ],
+          );
+        });
+  }
+
+  void _displayIntructions() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(child: Text('Instrucciones')),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  'Indica a que distancia se encuentran los generadores',
+                  style: TextStyle(fontSize: 17),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Mínimo 2 generadores',
+                  style: TextStyle(fontSize: 17),
+                  textAlign: TextAlign.center,
+                ),
               ],
             ),
             actions: [

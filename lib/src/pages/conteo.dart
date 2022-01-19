@@ -38,22 +38,24 @@ class _ConteoPageState extends State<ConteoPage> {
           ],
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-        children: [
-          _contruirSeparador(),
-          conteosProvider.conteos.isEmpty
-              ? const Center(child: Text("No hay conteos"))
-              : Column(
-                  children: [
-                    ..._crearItems(conteosProvider),
-                    conteosProvider.conteos.length >= 2
-                        ? _boton()
-                        : _contruirSeparador(),
-                  ],
-                ),
-        ],
-      ),
+      body: conteosProvider.conteos.isEmpty
+          ? const Center(
+              child: Text(
+                "No hay conteos",
+                style: TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
+              ),
+            )
+          : ListView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+              children: [
+                _contruirSeparador(),
+                ..._crearItems(conteosProvider),
+                conteosProvider.conteos.length >= 2
+                    ? _boton()
+                    : _contruirSeparador(),
+              ],
+            ),
       floatingActionButton: _botonAgregar(conteosProvider),
     );
   }

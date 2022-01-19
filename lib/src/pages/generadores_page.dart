@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:fichas/providers/generadores_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,13 +42,16 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
       body: generadoresProvider.generadores.isEmpty
           ? const Center(
               child: Text(
-              "No hay generadores",
-              style: TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
-            ))
+                "No hay generadores",
+                style: TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
+              ),
+            )
           : ListView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
               children: [
                 ..._crearItems(generadoresProvider),
-                _boton(),
+                if (generadoresProvider.generadores.length >= 2) _boton()
               ],
             ),
       floatingActionButton: _botonAgregar(generadoresProvider),
@@ -120,6 +121,35 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
     );
   }
 
+  void _displayDialogIntrucciones() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(child: Text('Instrucciones')),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Text(
+                  'Indica los competidores directos',
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 30),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Aceptar'))
+            ],
+          );
+        });
+  }
+
   Widget _boton() {
     return Center(
       child: ElevatedButton(
@@ -131,6 +161,7 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
         ),
         onPressed: () {
           Navigator.pushReplacementNamed(context, "competencias");
+          _displayDialogIntrucciones();
         },
         child: const Text("SIGUIENTE"),
       ),

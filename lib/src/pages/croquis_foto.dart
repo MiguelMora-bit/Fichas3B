@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,45 @@ class CroquisPage extends StatefulWidget {
 class _CroquisPageState extends State<CroquisPage> {
   final Completer<GoogleMapController> _controller = Completer();
   List<Marker> myMarker = [];
+
+  Position? currenPosition;
+  var geoLocator = Geolocator();
+
+  void locatePosition(controller) async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    currenPosition = position;
+
+    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
+
+    CameraPosition cameraPosition =
+        CameraPosition(target: latLngPosition, zoom: 14);
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,17 +98,21 @@ class _CroquisPageState extends State<CroquisPage> {
           Container(
               margin:
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-              child: _construirCroquis(_puntoInicial, croquisProvider)),
+              child: _construirCroquis(
+                  _puntoInicial, croquisProvider, locatePosition)),
           // _construirFotoInmueble(croquisProvider),
           _contruirSeparador(),
           _fotografia(croquisProvider),
-          _boton(croquisProvider)
+          _contruirSeparador(),
+          _boton(croquisProvider),
+          _contruirSeparador()
         ],
       ),
     );
   }
 
-  Widget _construirCroquis(_puntoInicial, CroquisProvider croquisProvider) {
+  Widget _construirCroquis(_puntoInicial, CroquisProvider croquisProvider,
+      void Function(dynamic controller) locatePosition) {
     myMarker.isNotEmpty
         ? croquisProvider.coordenadas = myMarker[0].toString()
         : null;
@@ -77,8 +121,13 @@ class _CroquisPageState extends State<CroquisPage> {
       child: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: _puntoInicial,
+        myLocationButtonEnabled: true,
+        myLocationEnabled: true,
+        zoomGesturesEnabled: true,
+        zoomControlsEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
+          locatePosition(controller);
         },
         gestureRecognizers: Set()
           ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer())),
@@ -159,7 +208,7 @@ class _CroquisPageState extends State<CroquisPage> {
 
           if (croquisProvider.foto == null) {
             return displayDialogAndroid(
-                "Falta fotografia", "Debes de agregar una fotografia");
+                "Falta fotografía", "Debes de agregar una fotografía");
           }
 
           Navigator.pushReplacementNamed(context, "fortalezasDebilidades");
@@ -177,13 +226,16 @@ class _CroquisPageState extends State<CroquisPage> {
         builder: (context) {
           return AlertDialog(
             elevation: 5,
-            title: Text(mensaje),
+            title: Center(child: Text(mensaje)),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.circular(15)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(contenido),
+                Text(
+                  contenido,
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 30),
               ],
             ),
