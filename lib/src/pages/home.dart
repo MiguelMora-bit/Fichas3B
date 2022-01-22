@@ -19,24 +19,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _boton() {
-    return ListView(
+    return Column(
       children: [
         _separador(),
         _logo(),
         _texto(),
         _imagenTienda(),
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              primary: Colors.red,
-              shape: const BeveledRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(3))),
+        Expanded(
+          child: Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                primary: Colors.red,
+                shape: const BeveledRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(3))),
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, "datosGenerales");
+              },
+              child: const Text("REGISTRA UNA FICHA"),
             ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "datosGenerales");
-            },
-            child: const Text("REGISTRA UNA FICHA"),
           ),
         ),
       ],
@@ -45,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _separador() {
     return Container(
-      height: 50,
+      height: 60,
     );
   }
 

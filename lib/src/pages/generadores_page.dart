@@ -197,9 +197,6 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
                   _inputGeneradores(generadoresProvider),
                   _contruirSeparador(),
                   _crearInputDistancia(generadoresProvider),
-                  const SizedBox(
-                    height: 30,
-                  ),
                 ],
               ),
             ),

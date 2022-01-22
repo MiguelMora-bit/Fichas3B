@@ -114,7 +114,7 @@ class _CroquisPageState extends State<CroquisPage> {
   Widget _construirCroquis(_puntoInicial, CroquisProvider croquisProvider,
       void Function(dynamic controller) locatePosition) {
     myMarker.isNotEmpty
-        ? croquisProvider.coordenadas = myMarker[0].toString()
+        ? croquisProvider.coordenadas = myMarker[0].position.toString()
         : null;
     return SizedBox(
       height: 500,

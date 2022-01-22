@@ -1,4 +1,5 @@
 import 'package:fichas/providers/providers.dart';
+import 'package:fichas/services/fichas_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +49,10 @@ class AppState extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => FortalezasDebilidadesProvider(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => FichasService(),
           lazy: false,
         )
       ],

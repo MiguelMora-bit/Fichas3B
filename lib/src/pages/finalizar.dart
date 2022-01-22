@@ -1,10 +1,33 @@
+import 'package:fichas/models/ficha_model.dart';
+import 'package:fichas/providers/providers.dart';
+import 'package:fichas/services/fichas_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-class FinalizarPage extends StatelessWidget {
+class FinalizarPage extends StatefulWidget {
   const FinalizarPage({Key? key}) : super(key: key);
 
   @override
+  State<FinalizarPage> createState() => _FinalizarPageState();
+}
+
+class _FinalizarPageState extends State<FinalizarPage> {
+  bool disponible = true;
+  @override
   Widget build(BuildContext context) {
+    final colaboradorProvider = Provider.of<ColaboradorProvider>(context);
+    final ubicacionProvider = Provider.of<UbicacionSitioProvider>(context);
+    final datosLocalesProvider = Provider.of<DatosLocalProvider>(context);
+    final competenciasProvider = Provider.of<CompetenciasProvider>(context);
+    final conteosProvider = Provider.of<ConteosProvider>(context);
+    final fortalezasDebilidadesProvider =
+        Provider.of<FortalezasDebilidadesProvider>(context);
+    final generadoresProvider = Provider.of<GeneradoresProvider>(context);
+    final croquisProvider = Provider.of<CroquisProvider>(context);
+
+    final fichasService = Provider.of<FichasService>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -31,7 +54,17 @@ class FinalizarPage extends StatelessWidget {
       body: Column(
         children: [
           _felicidades(),
-          _boton(context),
+          _boton(
+              context,
+              colaboradorProvider,
+              ubicacionProvider,
+              datosLocalesProvider,
+              competenciasProvider,
+              conteosProvider,
+              fortalezasDebilidadesProvider,
+              generadoresProvider,
+              croquisProvider,
+              fichasService)
         ],
       ),
     );
@@ -41,13 +74,24 @@ class FinalizarPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 50),
       child: Column(children: const [
-        Center(child: Text("¡FELICIDADES!")),
+        Text("¡FELICIDADES!"),
         Text("HAS LLENADO CORRECTAMENTE TU FICHA")
       ]),
     );
   }
 
-  Widget _boton(BuildContext context) {
+  Widget _boton(
+    BuildContext context,
+    ColaboradorProvider colaboradorProvider,
+    UbicacionSitioProvider ubicacionProvider,
+    DatosLocalProvider datosLocalesProvider,
+    CompetenciasProvider competenciasProvider,
+    ConteosProvider conteosProvider,
+    FortalezasDebilidadesProvider fortalezasDebilidadesProvider,
+    GeneradoresProvider generadoresProvider,
+    CroquisProvider croquisProvider,
+    FichasService fichasService,
+  ) {
     return Center(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -56,11 +100,76 @@ class FinalizarPage extends StatelessWidget {
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
-        onPressed: () {
-          Navigator.pushReplacementNamed(context, "home");
-        },
+        onPressed: disponible
+            ? () async {
+                setState(() {
+                  disponible = false;
+                });
+                final String? urlPicture =
+                    await fichasService.uploadImage(croquisProvider.foto);
+
+                Ficha nuevaFicha = Ficha(
+                    calle1: ubicacionProvider.calle1,
+                    calle2: ubicacionProvider.calle2,
+                    colonia: ubicacionProvider.colonia,
+                    competencias: competenciasProvider.competencias,
+                    conteos: conteosProvider.conteos,
+                    debilidades: fortalezasDebilidadesProvider.debilidades,
+                    delegacion: ubicacionProvider.delegacion,
+                    direccion: ubicacionProvider.direccion,
+                    fondo: datosLocalesProvider.fondo,
+                    fortalezas: fortalezasDebilidadesProvider.fortalezas,
+                    fotoUrl: urlPicture!,
+                    frente: datosLocalesProvider.frente,
+                    generadores: generadoresProvider.generadores,
+                    latLong: croquisProvider.coordenadas.toString(),
+                    nombreSitio: ubicacionProvider.nombreSitio,
+                    numEmpleado: colaboradorProvider.numeroEmpleado,
+                    propietario: datosLocalesProvider.propietario,
+                    telefono: datosLocalesProvider.telefono,
+                    ventaRenta: datosLocalesProvider.ventaRenta);
+
+                final String folio =
+                    await fichasService.createFicha(nuevaFicha);
+
+                displayDialogAndroid(context, folio);
+              }
+            : null,
         child: const Text("ENVIAR"),
       ),
     );
+  }
+
+  void displayDialogAndroid(context, String folio) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(
+                child: Text(
+              'Ficha guardada correctamente',
+              textAlign: TextAlign.center,
+            )),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Folio: $folio',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => SystemNavigator.pop(),
+                  child: const Text('Aceptar'))
+            ],
+          );
+        });
   }
 }

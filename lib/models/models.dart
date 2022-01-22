@@ -1,1 +1,1 @@
-export 'package:fichas/models/empleados.dart';
+export 'package:fichas/models/ficha_model.dart';

@@ -233,13 +233,16 @@ class _GeneralPageState extends State<GeneralPage> {
         builder: (context) {
           return AlertDialog(
             elevation: 5,
-            title: const Text('Empleado no encontrado'),
+            title: const Center(child: Text('Empleado no encontrado')),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.circular(15)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text('Número de empleado incorrecto'),
+                Text(
+                  'Número de empleado incorrecto',
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(height: 30),
               ],
             ),
