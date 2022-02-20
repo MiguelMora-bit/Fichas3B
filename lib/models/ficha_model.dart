@@ -24,9 +24,14 @@ class Fichas {
 
 class Ficha {
   Ficha({
+    required this.nombreEmpleado,
+    required this.puesto,
+    required this.tienda,
     required this.calle1,
     required this.calle2,
     required this.colonia,
+    required this.costo,
+    required this.estado,
     required this.competencias,
     required this.conteos,
     required this.debilidades,
@@ -43,11 +48,16 @@ class Ficha {
     required this.propietario,
     required this.telefono,
     required this.ventaRenta,
+    required this.tipoInmueble,
   });
 
+  String nombreEmpleado;
+  String puesto;
+  String tienda;
   String calle1;
   String calle2;
   String colonia;
+  String estado;
   List<Map<String, dynamic>> competencias;
   List<Map<String, dynamic>> conteos;
   String debilidades;
@@ -64,15 +74,23 @@ class Ficha {
   String propietario;
   String telefono;
   String ventaRenta;
+  String costo;
+  String tipoInmueble;
 
   factory Ficha.fromJson(String str) => Ficha.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Ficha.fromMap(Map<String, dynamic> json) => Ficha(
+        nombreEmpleado: json["nombreEmpleado"],
+        puesto: json["puesto"],
+        tienda: json["tienda"],
         calle1: json["calle1"],
         calle2: json["calle2"],
         colonia: json["colonia"],
+        estado: json["estado"],
+        costo: json["costo"],
+        tipoInmueble: json["tipoInmueble"],
         competencias:
             List<Map<String, dynamic>>.from(json["competencias"].map((x) => x)),
         conteos: List<Map<String, dynamic>>.from(json["conteos"].map((x) => x)),
@@ -94,9 +112,14 @@ class Ficha {
       );
 
   Map<String, dynamic> toMap() => {
+        "nombreEmpleado": nombreEmpleado,
+        "puesto": puesto,
+        "tienda": tienda,
         "calle1": calle1,
         "calle2": calle2,
         "colonia": colonia,
+        "estado": estado,
+        "costo": costo,
         "competencias": List<dynamic>.from(competencias.map((x) => x)),
         "conteos": List<dynamic>.from(conteos.map((x) => x)),
         "debilidades": debilidades,
@@ -113,5 +136,6 @@ class Ficha {
         "propietario": propietario,
         "telefono": telefono,
         "ventaRenta": ventaRenta,
+        "tipoInmueble": tipoInmueble
       };
 }

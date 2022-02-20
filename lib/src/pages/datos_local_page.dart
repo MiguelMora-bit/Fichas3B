@@ -12,6 +12,7 @@ class DatosLocalPage extends StatefulWidget {
 
 class _DatosLocalPageState extends State<DatosLocalPage> {
   String dropdownValue = "";
+  String? _character = "Renta";
   @override
   Widget build(BuildContext context) {
     final datosLocalProvider = Provider.of<DatosLocalProvider>(context);
@@ -48,7 +49,14 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
             _contruirSeparador(),
             _crearInputTelefono(datosLocalProvider),
             _contruirSeparador(),
-            _inputRentaVenta(datosLocalProvider),
+            _compraRenta(datosLocalProvider),
+            _contruirSeparador(),
+            _character == "Renta"
+                ? _crearInputCosto(
+                    datosLocalProvider, "Renta solicitada mensualmente")
+                : _crearInputCosto(datosLocalProvider, "Precio de venta"),
+            _contruirSeparador(),
+            _inputTipoInmueble(datosLocalProvider),
             _contruirSeparador(),
             _crearInputFrente(datosLocalProvider),
             _contruirSeparador(),
@@ -109,6 +117,25 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
     );
   }
 
+  Widget _crearInputCosto(datosLocalProvider, String tipo) {
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+      decoration: InputDecoration(
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+        labelText: tipo,
+        hintText: "\$",
+        labelStyle: const TextStyle(
+          color: Colors.black,
+        ),
+      ),
+      onChanged: (value) => datosLocalProvider.costo = value,
+      validator: (value) {
+        return value!.isEmpty ? "Debes de ingresar un valor" : null;
+      },
+    );
+  }
+
   Widget _crearInputFrente(datosLocalProvider) {
     return TextFormField(
       keyboardType: TextInputType.number,
@@ -149,17 +176,54 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
     );
   }
 
-  Widget _inputRentaVenta(datosLocalProvider) {
+  Widget _compraRenta(datosLocalProvider) {
+    return Row(
+      children: [
+        Expanded(
+          child: ListTile(
+            title: const Text("Renta"),
+            leading: Radio(
+              value: "Renta",
+              groupValue: _character,
+              onChanged: (String? value) {
+                datosLocalProvider.ventaRenta = value;
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListTile(
+            title: const Text("Venta"),
+            leading: Radio(
+              value: "Venta",
+              groupValue: _character,
+              onChanged: (String? value) {
+                datosLocalProvider.ventaRenta = value;
+                setState(() {
+                  _character = value;
+                });
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _inputTipoInmueble(datosLocalProvider) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "VENTA/RENTA",
+        labelText: "Tipo de inmueble ",
         labelStyle: const TextStyle(
           color: Colors.black,
         ),
       ),
       onChanged: (String? newValue) {
-        datosLocalProvider.ventaRenta = newValue;
+        datosLocalProvider.tipoInmueble = newValue;
         setState(() {
           dropdownValue = newValue!;
         });
@@ -194,7 +258,7 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
           double metrosCuadrados = double.parse(datosLocalProvider.fondo) *
               double.parse(datosLocalProvider.frente);
 
-          if (metrosCuadrados < 400) return _displayDialogAndroid();
+          if (metrosCuadrados < 300) return _displayDialogAndroid();
 
           Navigator.pushReplacementNamed(context, "generadores");
           _displayIntructions();
@@ -218,7 +282,7 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
               mainAxisSize: MainAxisSize.min,
               children: const [
                 Text(
-                  'La superficie mínima para una tienda 3B es de 400 metros cuadrados',
+                  'La superficie mínima para una tienda 3B es de 300 metros cuadrados',
                   style: TextStyle(fontSize: 17),
                   textAlign: TextAlign.center,
                 ),

@@ -94,10 +94,10 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
         });
       },
       items: <String>[
+        "Abarrotera local",
         "Aurrera express",
-        "Tienda de abarrotes",
+        "Chedraui",
         "Neto",
-        "Oxxo",
       ].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,

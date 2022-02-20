@@ -1,5 +1,6 @@
 import 'package:fichas/models/ficha_model.dart';
 import 'package:fichas/providers/providers.dart';
+import 'package:fichas/services/empleados_services.dart';
 import 'package:fichas/services/fichas_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,7 @@ class _FinalizarPageState extends State<FinalizarPage> {
     final croquisProvider = Provider.of<CroquisProvider>(context);
 
     final fichasService = Provider.of<FichasService>(context);
+    final empleadoService = Provider.of<EmpleadosServices>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +66,8 @@ class _FinalizarPageState extends State<FinalizarPage> {
               fortalezasDebilidadesProvider,
               generadoresProvider,
               croquisProvider,
-              fichasService)
+              fichasService,
+              empleadoService)
         ],
       ),
     );
@@ -91,6 +94,7 @@ class _FinalizarPageState extends State<FinalizarPage> {
     GeneradoresProvider generadoresProvider,
     CroquisProvider croquisProvider,
     FichasService fichasService,
+    EmpleadosServices empleadoService,
   ) {
     return Center(
       child: ElevatedButton(
@@ -109,28 +113,42 @@ class _FinalizarPageState extends State<FinalizarPage> {
                     await fichasService.uploadImage(croquisProvider.foto);
 
                 Ficha nuevaFicha = Ficha(
-                    calle1: ubicacionProvider.calle1,
-                    calle2: ubicacionProvider.calle2,
-                    colonia: ubicacionProvider.colonia,
-                    competencias: competenciasProvider.competencias,
-                    conteos: conteosProvider.conteos,
-                    debilidades: fortalezasDebilidadesProvider.debilidades,
-                    delegacion: ubicacionProvider.delegacion,
-                    direccion: ubicacionProvider.direccion,
-                    fondo: datosLocalesProvider.fondo,
-                    fortalezas: fortalezasDebilidadesProvider.fortalezas,
-                    fotoUrl: urlPicture!,
-                    frente: datosLocalesProvider.frente,
-                    generadores: generadoresProvider.generadores,
-                    latLong: croquisProvider.coordenadas.toString(),
-                    nombreSitio: ubicacionProvider.nombreSitio,
-                    numEmpleado: colaboradorProvider.numeroEmpleado,
-                    propietario: datosLocalesProvider.propietario,
-                    telefono: datosLocalesProvider.telefono,
-                    ventaRenta: datosLocalesProvider.ventaRenta);
+                  calle1: ubicacionProvider.calle1,
+                  calle2: ubicacionProvider.calle2,
+                  colonia: ubicacionProvider.colonia,
+                  estado: ubicacionProvider.estado,
+                  competencias: competenciasProvider.competencias,
+                  conteos: conteosProvider.conteos,
+                  debilidades: fortalezasDebilidadesProvider.debilidades,
+                  delegacion: ubicacionProvider.delegacion,
+                  direccion: ubicacionProvider.direccion,
+                  fondo: datosLocalesProvider.fondo,
+                  fortalezas: fortalezasDebilidadesProvider.fortalezas,
+                  fotoUrl: urlPicture!,
+                  frente: datosLocalesProvider.frente,
+                  generadores: generadoresProvider.generadores,
+                  latLong: croquisProvider.coordenadas.toString(),
+                  nombreSitio: ubicacionProvider.nombreSitio,
+                  numEmpleado: colaboradorProvider.numeroEmpleado,
+                  propietario: datosLocalesProvider.propietario,
+                  telefono: datosLocalesProvider.telefono,
+                  ventaRenta: datosLocalesProvider.ventaRenta,
+                  costo: datosLocalesProvider.costo,
+                  tipoInmueble: datosLocalesProvider.tipoInmueble,
+                  nombreEmpleado: colaboradorProvider.nombreEmpleado,
+                  puesto: colaboradorProvider.puesto,
+                  tienda: colaboradorProvider.tienda,
+                );
 
                 final String folio =
                     await fichasService.createFicha(nuevaFicha);
+
+                final List<dynamic> fichas = await empleadoService
+                    .obtenerFichasEmpleado(colaboradorProvider.numeroEmpleado);
+                fichas.add(folio);
+
+                await empleadoService.updateFichasEmpleado(
+                    colaboradorProvider.numeroEmpleado, fichas);
 
                 displayDialogAndroid(context, folio);
               }

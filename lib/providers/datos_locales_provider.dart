@@ -5,9 +5,11 @@ class DatosLocalProvider extends ChangeNotifier {
 
   String propietario = "";
   String telefono = "";
-  String ventaRenta = "";
+  String ventaRenta = "Renta";
   String frente = "";
   String fondo = "";
+  String costo = "";
+  String tipoInmueble = "";
 
   bool isValidForm() {
     return formDatosLocalKey.currentState?.validate() ?? false;

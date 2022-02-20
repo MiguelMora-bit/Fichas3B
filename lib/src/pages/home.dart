@@ -26,22 +26,48 @@ class _HomePageState extends State<HomePage> {
         _texto(),
         _imagenTienda(),
         Expanded(
-          child: Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                primary: Colors.red,
-                shape: const BeveledRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(3))),
-              ),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "datosGenerales");
-              },
-              child: const Text("REGISTRA UNA FICHA"),
-            ),
+          child: Column(
+            children: [
+              _botonRegistrar(),
+              _botonRevisar(),
+            ],
           ),
-        ),
+        )
       ],
+    );
+  }
+
+  Widget _botonRegistrar() {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          primary: Colors.red,
+          shape: const BeveledRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(3))),
+        ),
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, "datosGenerales");
+        },
+        child: const Text("  REGISTRA UNA FICHA  "),
+      ),
+    );
+  }
+
+  Widget _botonRevisar() {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          primary: Colors.red,
+          shape: const BeveledRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(3))),
+        ),
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, "estadoFichas");
+        },
+        child: const Text("ESTADO DE TUS FICHAS"),
+      ),
     );
   }
 

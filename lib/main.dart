@@ -17,43 +17,43 @@ class AppState extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => EmpleadosServices(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => ColaboradorProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => UbicacionSitioProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => DatosLocalProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => GeneradoresProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => CompetenciasProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => ConteosProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => CroquisProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => FortalezasDebilidadesProvider(),
-          lazy: false,
+          // lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => FichasService(),
-          lazy: false,
+          // lazy: false,
         )
       ],
       child: const MyApp(),
@@ -68,7 +68,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Material App',
+      title: 'Fichas 3B',
+      color: Colors.red,
       initialRoute: AppRoutes.initialRoute,
       routes: AppRoutes.routes,
     );

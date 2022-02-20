@@ -1,3 +1,4 @@
+import 'package:fichas/services/fichas_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -5,14 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:fichas/providers/colaborador_provider.dart';
 import 'package:fichas/services/empleados_services.dart';
 
-class GeneralPage extends StatefulWidget {
-  const GeneralPage({Key? key}) : super(key: key);
+class ColaboradorStadoPage extends StatefulWidget {
+  const ColaboradorStadoPage({Key? key}) : super(key: key);
 
   @override
-  _GeneralPageState createState() => _GeneralPageState();
+  _ColaboradorStadoPageState createState() => _ColaboradorStadoPageState();
 }
 
-class _GeneralPageState extends State<GeneralPage> {
+class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
   bool isVisible = false;
   bool isVisibleButtons = false;
   bool isVisibleSiguiente = true;
@@ -33,6 +34,8 @@ class _GeneralPageState extends State<GeneralPage> {
 
     final colaboradorProvider = Provider.of<ColaboradorProvider>(context);
 
+    final fichasService = Provider.of<FichasService>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -50,7 +53,7 @@ class _GeneralPageState extends State<GeneralPage> {
             ),
             const Expanded(
               child: FittedBox(
-                child: Text("DATOS DEL COLABORADOR"),
+                child: Text("  FICHAS DEL COLABORADOR"),
               ),
             ),
           ],
@@ -105,7 +108,7 @@ class _GeneralPageState extends State<GeneralPage> {
               ),
             ),
             _contruirSeparador(),
-            _botones()
+            _botones(empleadosService, colaboradorProvider, fichasService)
           ],
         ),
       ),
@@ -208,7 +211,8 @@ class _GeneralPageState extends State<GeneralPage> {
     );
   }
 
-  Widget _botonConfirmar() {
+  Widget _botonConfirmar(EmpleadosServices empleadosService,
+      ColaboradorProvider colaboradorProvider, FichasService fichasService) {
     return Center(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -217,8 +221,10 @@ class _GeneralPageState extends State<GeneralPage> {
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
-        onPressed: () {
-          Navigator.pushReplacementNamed(context, "ubicacionSitio");
+        onPressed: () async {
+          fichasService.loadFichasEmpleado(await empleadosService
+              .obtenerFichasEmpleado(colaboradorProvider.numeroEmpleado));
+          Navigator.pushReplacementNamed(context, "listadoFichas");
         },
         child: const Text("CONFIRMAR"),
       ),
@@ -241,12 +247,16 @@ class _GeneralPageState extends State<GeneralPage> {
     );
   }
 
-  Widget _botones() {
+  Widget _botones(EmpleadosServices empleadosService,
+      ColaboradorProvider colaboradorProvider, FichasService fichasService) {
     return Visibility(
       visible: isVisibleButtons,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [_botonRegresar(), _botonConfirmar()],
+        children: [
+          _botonRegresar(),
+          _botonConfirmar(empleadosService, colaboradorProvider, fichasService)
+        ],
       ),
     );
   }

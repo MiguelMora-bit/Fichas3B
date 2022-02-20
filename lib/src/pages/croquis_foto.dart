@@ -21,8 +21,9 @@ class CroquisPage extends StatefulWidget {
 class _CroquisPageState extends State<CroquisPage> {
   final Completer<GoogleMapController> _controller = Completer();
   List<Marker> myMarker = [];
-
+  Set<Marker> markers = <Marker>{};
   Position? currenPosition;
+  Marker? marcador;
   var geoLocator = Geolocator();
 
   void locatePosition(controller) async {
@@ -57,6 +58,11 @@ class _CroquisPageState extends State<CroquisPage> {
         CameraPosition(target: latLngPosition, zoom: 14);
 
     controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    marcador = Marker(
+        markerId: const MarkerId('ubicacionLocal'),
+        position: LatLng(position.latitude, position.longitude));
+    markers.add(marcador!);
 
     setState(() {});
   }
@@ -99,7 +105,7 @@ class _CroquisPageState extends State<CroquisPage> {
               margin:
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
               child: _construirCroquis(
-                  _puntoInicial, croquisProvider, locatePosition)),
+                  _puntoInicial, marcador, croquisProvider, locatePosition)),
           // _construirFotoInmueble(croquisProvider),
           _contruirSeparador(),
           _fotografia(croquisProvider),
@@ -111,10 +117,16 @@ class _CroquisPageState extends State<CroquisPage> {
     );
   }
 
-  Widget _construirCroquis(_puntoInicial, CroquisProvider croquisProvider,
+  Widget _construirCroquis(
+      _puntoInicial,
+      Marker? marcador,
+      CroquisProvider croquisProvider,
       void Function(dynamic controller) locatePosition) {
     myMarker.isNotEmpty
         ? croquisProvider.coordenadas = myMarker[0].position.toString()
+        : null;
+    marcador != null
+        ? croquisProvider.coordenadas = marcador.position.toString()
         : null;
     return SizedBox(
       height: 500,
@@ -131,7 +143,7 @@ class _CroquisPageState extends State<CroquisPage> {
         },
         gestureRecognizers: Set()
           ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer())),
-        markers: Set.from(myMarker),
+        markers: markers.isEmpty ? Set.from(myMarker) : markers,
         onTap: _handleTap,
       ),
     );

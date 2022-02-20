@@ -17,6 +17,8 @@ class AppRoutes {
     "agregarConteo": (BuildContext context) => const AgregarConteo(),
     "fortalezasDebilidades": (BuildContext context) =>
         const FortalezasDebilidaesPage(),
-    "finalizar": (BuildContext context) => const FinalizarPage()
+    "finalizar": (BuildContext context) => const FinalizarPage(),
+    "estadoFichas": (BuildContext context) => const ColaboradorStadoPage(),
+    "listadoFichas": (BuildContext context) => const EstadoFichas(),
   };
 }

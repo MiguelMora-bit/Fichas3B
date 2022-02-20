@@ -9,3 +9,5 @@ export 'package:fichas/src/pages/conteo.dart';
 export 'package:fichas/src/pages/fortalezas_debilidades_page.dart';
 export 'package:fichas/src/pages/finalizar.dart';
 export 'package:fichas/src/pages/agregar_conteo.dart';
+export 'package:fichas/src/pages/colaborador_estado_ficha.dart';
+export 'package:fichas/src/pages/estado_fichas.dart';

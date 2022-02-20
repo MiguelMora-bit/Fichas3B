@@ -6,6 +6,33 @@ import 'package:http/http.dart' as http;
 
 class FichasService extends ChangeNotifier {
   final String _baseUrl = 'fichasguardadas-default-rtdb.firebaseio.com';
+  final List<FichaExistente> fichas = [];
+
+  bool isLoading = true;
+
+  Future<List<FichaExistente>> loadFichasEmpleado(List fichasEmpleado) async {
+    isLoading = true;
+    notifyListeners();
+    for (String element in fichasEmpleado) {
+      var fichaCargada = (await loadFicha(element));
+      final tempFicha = FichaExistente(
+          folio: element,
+          delegacion: fichaCargada!["delegacion"],
+          fotoUrl: fichaCargada["fotoUrl"],
+          status: fichaCargada["status"]);
+      fichas.add(tempFicha);
+    }
+    isLoading = false;
+    notifyListeners();
+    return fichas;
+  }
+
+  Future<Map<String, dynamic>?> loadFicha(String folio) async {
+    final url = Uri.https(_baseUrl, "Fichas/$folio.json");
+    final resp = await http.get(url);
+    var _ficha = jsonDecode(resp.body);
+    return _ficha;
+  }
 
   Future<String> createFicha(Ficha ficha) async {
     final url = Uri.https(_baseUrl, 'Fichas.json');
@@ -30,8 +57,6 @@ class FichasService extends ChangeNotifier {
     final resp = await http.Response.fromStream(streamResponse);
 
     if (resp.statusCode != 200 && resp.statusCode != 201) {
-      // print('algo salio mal');
-      // print(resp.body);
       return null;
     }
     final decodedData = json.decode(resp.body);
