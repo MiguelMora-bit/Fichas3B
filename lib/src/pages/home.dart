@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+
+import '../../services/misiones_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,15 +14,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final misionesService = Provider.of<MisionesServices>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: _boton(),
+        child: _boton(misionesService),
       ),
     );
   }
 
-  Widget _boton() {
+  Widget _boton(misionesService) {
     return Column(
       children: [
         _separador(),
@@ -30,6 +36,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               _botonRegistrar(),
               _botonRevisar(),
+              _botonMisiones(misionesService)
             ],
           ),
         )
@@ -42,12 +49,12 @@ class _HomePageState extends State<HomePage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          primary: Colors.red,
+          backgroundColor: Colors.red,
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "datosGenerales");
+          Navigator.pushReplacementNamed(context, "introduction");
         },
         child: const Text("  REGISTRA UNA FICHA  "),
       ),
@@ -59,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          primary: Colors.red,
+          backgroundColor: Colors.red,
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
@@ -71,9 +78,26 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _botonMisiones(misionesService) {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: Colors.red,
+          shape: const BeveledRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(3))),
+        ),
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, "lista_misiones");
+        },
+        child: const Text("              MISIONES            "),
+      ),
+    );
+  }
+
   Widget _separador() {
     return Container(
-      height: 60,
+      height: 30,
     );
   }
 
@@ -91,19 +115,21 @@ class _HomePageState extends State<HomePage> {
   Widget _texto() {
     return Column(
       children: [
-        const Text("“Queremos llevar nuestros ",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        Row(
+        const Text("“Una tienda nueva ",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+        Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Text("precios bajos ",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 20,
-                    color: Colors.red)),
-            Text("cerca de ti”",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20))
+            Text("nuevas familas ahorrando”",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+            Center(
+              child: Text("y tu ganando ",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 25,
+                      color: Colors.red)),
+            ),
           ],
         )
       ],
@@ -114,12 +140,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 30),
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
-        child: Image.asset(
-          "assets/tiendas-3B.jpg",
-        ),
-      ),
+      child: Lottie.asset('assets/tienda.json', width: 250, height: 250),
     );
   }
 }

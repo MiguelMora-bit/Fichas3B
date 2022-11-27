@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fichas/src/pages/pages.dart';
 
 class AppRoutes {
-  static const initialRoute = "home";
+  static const initialRoute = "datosLocal";
 
   static Map<String, Widget Function(BuildContext)> routes = {
     "home": (BuildContext context) => const HomePage(),
@@ -13,12 +13,11 @@ class AppRoutes {
     "ubicacionSitio": (BuildContext context) => const UbicacionSitioPage(),
     "generadores": (BuildContext context) => const GeneradoresPage(),
     "competencias": (BuildContext context) => const CompetenciasPage(),
-    "conteos": (BuildContext context) => const ConteoPage(),
-    "agregarConteo": (BuildContext context) => const AgregarConteo(),
-    "fortalezasDebilidades": (BuildContext context) =>
-        const FortalezasDebilidaesPage(),
     "finalizar": (BuildContext context) => const FinalizarPage(),
     "estadoFichas": (BuildContext context) => const ColaboradorStadoPage(),
     "listadoFichas": (BuildContext context) => const EstadoFichas(),
+    "introduction": (BuildContext context) => const OnBoardingPage(),
+    "detalles": (BuildContext context) => const Detalles(),
+    "lista_misiones": (BuildContext context) => const ListaMisiones(),
   };
 }

@@ -1,5 +1,7 @@
 import 'package:fichas/providers/providers.dart';
+import 'package:fichas/services/codigo_postal.services.dart';
 import 'package:fichas/services/fichas_services.dart';
+import 'package:fichas/services/misiones_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +19,10 @@ class AppState extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => EmpleadosServices(),
+          // lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CodigoPostalServices(),
           // lazy: false,
         ),
         ChangeNotifierProvider(
@@ -39,20 +45,17 @@ class AppState extends StatelessWidget {
           create: (_) => CompetenciasProvider(),
           // lazy: false,
         ),
-        ChangeNotifierProvider(
-          create: (_) => ConteosProvider(),
-          // lazy: false,
-        ),
+        // lazy: false,
         ChangeNotifierProvider(
           create: (_) => CroquisProvider(),
           // lazy: false,
         ),
         ChangeNotifierProvider(
-          create: (_) => FortalezasDebilidadesProvider(),
+          create: (_) => FichasService(),
           // lazy: false,
         ),
         ChangeNotifierProvider(
-          create: (_) => FichasService(),
+          create: (_) => MisionesServices(),
           // lazy: false,
         )
       ],

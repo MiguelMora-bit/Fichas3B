@@ -1,7 +1,8 @@
-import 'package:fichas/providers/generadores_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/generadores_provider.dart';
+import '../../widgets/card_table.dart';
 
 class GeneradoresPage extends StatefulWidget {
   const GeneradoresPage({Key? key}) : super(key: key);
@@ -16,109 +17,83 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
   @override
   Widget build(BuildContext context) {
     final generadoresProvider = Provider.of<GeneradoresProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.red,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Image.asset(
-              "assets/Logo3B.png",
-              height: 50.0,
-              width: 50.0,
-            ),
-            Container(
-              width: 120,
-            ),
-            const Expanded(
-              child: FittedBox(
-                child: Text("        GENERADORES"),
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: Colors.red,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.asset(
+                "assets/Logo3B.png",
+                height: 50.0,
+                width: 50.0,
               ),
-            ),
-          ],
+              Container(
+                width: 120,
+              ),
+              const Expanded(
+                child: FittedBox(
+                  child: Text("        GENERADORES"),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: generadoresProvider.generadores.isEmpty
-          ? const Center(
-              child: Text(
-                "No hay generadores",
-                style: TextStyle(fontSize: 25, fontStyle: FontStyle.italic),
-              ),
-            )
-          : ListView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-              children: [
-                ..._crearItems(generadoresProvider),
-                if (generadoresProvider.generadores.length >= 2) _boton()
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Card Table
+              const CardTable(),
+              _boton(generadoresProvider)
+            ],
+          ),
+        ));
+  }
+
+  void displayDialogConfirmation() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(
+                child: Text('Confirmación',
+                    style: TextStyle(color: Colors.black))),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                SizedBox(height: 20),
+                Icon(
+                  Icons.save,
+                  size: 60.0,
+                ),
+                SizedBox(height: 30),
+                Text('¿Estas seguro de agregar estos generadores?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black)),
               ],
             ),
-      floatingActionButton: _botonAgregar(generadoresProvider),
-    );
-  }
-
-  Widget _contruirSeparador() {
-    return Container(
-      height: 20,
-    );
-  }
-
-  Widget _inputGeneradores(generadoresProvider) {
-    dropdownValueGeneradores = "";
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Generadores",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
-      onChanged: (String? newValue) {
-        generadoresProvider.generador = newValue;
-        setState(() {
-          dropdownValueGeneradores = newValue!;
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar',
+                      style: TextStyle(color: Colors.black))),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, "competencias");
+                    _displayDialogIntrucciones();
+                  },
+                  child: const Text('Aceptar',
+                      style: TextStyle(color: Colors.black))),
+            ],
+          );
         });
-      },
-      items: <String>[
-        "Mercado",
-        "Iglesia",
-        "Oficina de Gobierno",
-        "Estación de Metro",
-        "Parada pecero",
-        "Banco",
-        "Hospital",
-        "Escuela"
-      ].map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-      hint: Text(dropdownValueGeneradores),
-      validator: (value) {
-        return value == null ? "Debes de ingresar un valor" : null;
-      },
-    );
-  }
-
-  Widget _crearInputDistancia(generadoresProvider) {
-    return TextFormField(
-      enableInteractiveSelection: false,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
-      decoration: InputDecoration(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Distancia",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
-      onChanged: (value) => generadoresProvider.distancia = value,
-      validator: (value) {
-        return value!.isEmpty ? "Debes de ingresar la distancia" : null;
-      },
-    );
   }
 
   void _displayDialogIntrucciones() {
@@ -134,118 +109,87 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text(
-                  'Indica los competidores directos',
-                  textAlign: TextAlign.center,
+                Icon(
+                  Icons.remove_shopping_cart_outlined,
+                  size: 60.0,
                 ),
                 SizedBox(height: 30),
+                Text('Indica los competidores',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black)),
+                Text('directos',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black)),
               ],
             ),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Aceptar'))
+                  child: const Text('Aceptar',
+                      style: TextStyle(color: Colors.black)))
             ],
           );
         });
   }
 
-  Widget _boton() {
-    return Center(
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          primary: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
-        onPressed: () {
-          Navigator.pushReplacementNamed(context, "competencias");
-          _displayDialogIntrucciones();
-        },
-        child: const Text("SIGUIENTE"),
-      ),
-    );
-  }
-
-  Widget _botonAgregar(GeneradoresProvider generadoresProvider) {
-    return FloatingActionButton(
-      onPressed: () => _openDialog(generadoresProvider),
-      child: const Icon(Icons.add),
-      backgroundColor: Colors.red,
-      elevation: 0,
-    );
-  }
-
-  void _openDialog(GeneradoresProvider generadoresProvider) {
+  void _displayDialogErrores() {
     showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(
             elevation: 5,
-            title: const Center(child: Text('Agregar generador')),
+            title: const Center(
+                child: Text('Error', style: TextStyle(color: Colors.black))),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.circular(15)),
-            content: Form(
-              key: generadoresProvider.formGeneradoresKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(width: MediaQuery.of(context).size.width - 2),
-                  _inputGeneradores(generadoresProvider),
-                  _contruirSeparador(),
-                  _crearInputDistancia(generadoresProvider),
-                ],
-              ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                SizedBox(height: 20),
+                Icon(
+                  Icons.error_outline_outlined,
+                  size: 60.0,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Necesitas agregar como mínimo',
+                  style: TextStyle(color: Colors.black),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  '2 generadores',
+                  style: TextStyle(color: Colors.black),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar')),
-              TextButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-
-                    if (!generadoresProvider.isValidForm()) return;
-
-                    setState(() {
-                      generadoresProvider.generadores.add({
-                        "id": generadoresProvider.generadores.length,
-                        "generador": generadoresProvider.generador,
-                        "distancia": generadoresProvider.distancia
-                      });
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Agregar'))
+                  child: const Text('Aceptar',
+                      style: TextStyle(color: Colors.black)))
             ],
           );
         });
   }
 
-  List _crearItems(generadoresProvider) {
-    List temporal = [];
-
-    for (Map<String, dynamic> generador in generadoresProvider.generadores) {
-      Widget item = ListTile(
-        title: Text("${generador["generador"]}"),
-        subtitle: Text(("Distancia: ${generador["distancia"]} metros")),
-        isThreeLine: true,
-        trailing: const Icon(
-          Icons.delete,
-          color: Colors.red,
+  Widget _boton(GeneradoresProvider generadoresProvider) {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: Colors.red,
+          shape: const BeveledRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
-        onTap: () {
-          setState(() {
-            generadoresProvider.generadores.removeWhere(
-                (currenItem) => currenItem["id"] == generador["id"]);
-          });
+        onPressed: () {
+          generadoresProvider.validacionAvanzar()
+              ? displayDialogConfirmation()
+              : _displayDialogErrores();
         },
-      );
-      temporal.add(item);
-    }
-    return temporal;
+        child: const Text("SIGUIENTE"),
+      ),
+    );
   }
 }

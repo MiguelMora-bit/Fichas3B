@@ -78,6 +78,13 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
   Widget _crearInputPropietario(datosLocalProvider) {
     return TextFormField(
       decoration: InputDecoration(
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(0.2),
+          child: Icon(
+            Icons.person_outline,
+            color: Colors.grey,
+          ),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
         labelText: "Propietario",
         labelStyle: const TextStyle(
@@ -98,6 +105,13 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
       decoration: InputDecoration(
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(0.2),
+          child: Icon(
+            Icons.phone_android_outlined,
+            color: Colors.grey,
+          ),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
         labelText: "Teléfono",
         labelStyle: const TextStyle(
@@ -122,9 +136,15 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
       decoration: InputDecoration(
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(0.2),
+          child: Icon(
+            Icons.attach_money_outlined,
+            color: Colors.grey,
+          ),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
         labelText: tipo,
-        hintText: "\$",
         labelStyle: const TextStyle(
           color: Colors.black,
         ),
@@ -141,6 +161,13 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
       decoration: InputDecoration(
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(0.2),
+          child: Icon(
+            Icons.straighten_outlined,
+            color: Colors.grey,
+          ),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
         labelText: "Frente (m)",
         labelStyle: const TextStyle(
@@ -161,6 +188,13 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
       decoration: InputDecoration(
+        prefixIcon: const Padding(
+          padding: EdgeInsets.all(0.2),
+          child: Icon(
+            Icons.straighten_outlined,
+            color: Colors.grey,
+          ),
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
         labelText: "Fondo (m)",
         labelStyle: const TextStyle(
@@ -247,7 +281,7 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          primary: Colors.red,
+          backgroundColor: Colors.red,
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
@@ -258,7 +292,14 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
           double metrosCuadrados = double.parse(datosLocalProvider.fondo) *
               double.parse(datosLocalProvider.frente);
 
-          if (metrosCuadrados < 300) return _displayDialogAndroid();
+          var minimoCuadrado = 350;
+          if (datosLocalProvider.tipoInmueble == "Terreno") {
+            minimoCuadrado = 500;
+          }
+
+          if (metrosCuadrados < minimoCuadrado)
+            return _displayDialogAndroid(
+                datosLocalProvider.tipoInmueble, minimoCuadrado);
 
           Navigator.pushReplacementNamed(context, "generadores");
           _displayIntructions();
@@ -268,31 +309,45 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
     );
   }
 
-  void _displayDialogAndroid() {
+  void _displayDialogAndroid(tipoInmueble, metros) {
+    var conector = tipoInmueble == "Casa" ? 'una ' : 'un ';
     showDialog(
         barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(
             elevation: 5,
-            title: const Center(child: Text('Local pequeño')),
+            title: Center(
+                child: tipoInmueble == "Casa"
+                    ? Text(tipoInmueble + ' pequeña')
+                    : Text(tipoInmueble + ' pequeño')),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusDirectional.circular(15)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
+                const Icon(
+                  Icons.error_outline_outlined,
+                  size: 60.0,
+                ),
+                const SizedBox(height: 20),
                 Text(
-                  'La superficie mínima para una tienda 3B es de 300 metros cuadrados',
-                  style: TextStyle(fontSize: 17),
+                  'La superficie mínima para una tienda 3B en ' +
+                      conector +
+                      tipoInmueble.toLowerCase() +
+                      ' es de ' +
+                      metros.toString() +
+                      ' metros cuadrados',
+                  style: const TextStyle(fontSize: 17, color: Colors.black),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 30),
               ],
             ),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Aceptar'))
+                  child: const Text('Aceptar',
+                      style: TextStyle(color: Colors.black)))
             ],
           );
         });
@@ -311,15 +366,25 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: const [
+                Icon(
+                  Icons.add_business_rounded,
+                  size: 60.0,
+                ),
+                SizedBox(height: 20),
                 Text(
-                  'Indica a que distancia se encuentran los generadores',
-                  style: TextStyle(fontSize: 17),
+                  'Indica a que distancia se ',
+                  style: TextStyle(fontSize: 17, color: Colors.black),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 15),
+                Text(
+                  'encuentran los generadores',
+                  style: TextStyle(fontSize: 17, color: Colors.black),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
                 Text(
                   'Mínimo 2 generadores',
-                  style: TextStyle(fontSize: 17),
+                  style: TextStyle(fontSize: 17, color: Colors.black),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -327,7 +392,8 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Aceptar'))
+                  child: const Text('Aceptar',
+                      style: TextStyle(color: Colors.black)))
             ],
           );
         });

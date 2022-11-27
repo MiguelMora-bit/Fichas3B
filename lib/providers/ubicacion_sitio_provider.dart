@@ -10,6 +10,7 @@ class UbicacionSitioProvider extends ChangeNotifier {
   String calle2 = "";
   String nombreSitio = "";
   String estado = "";
+  String codigoPostal = "";
 
   bool isValidForm() {
     return formUbicacionKey.currentState?.validate() ?? false;

@@ -64,6 +64,11 @@ class _CroquisPageState extends State<CroquisPage> {
         position: LatLng(position.latitude, position.longitude));
     markers.add(marcador!);
 
+    myMarker.clear();
+    myMarker.add(Marker(
+        markerId: const MarkerId('ubicacionLocal'),
+        position: LatLng(position.latitude, position.longitude)));
+
     setState(() {});
   }
 
@@ -125,11 +130,9 @@ class _CroquisPageState extends State<CroquisPage> {
     myMarker.isNotEmpty
         ? croquisProvider.coordenadas = myMarker[0].position.toString()
         : null;
-    marcador != null
-        ? croquisProvider.coordenadas = marcador.position.toString()
-        : null;
+
     return SizedBox(
-      height: 500,
+      height: 700,
       child: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: _puntoInicial,
@@ -141,9 +144,10 @@ class _CroquisPageState extends State<CroquisPage> {
           _controller.complete(controller);
           locatePosition(controller);
         },
+        // ignore: prefer_collection_literals
         gestureRecognizers: Set()
           ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer())),
-        markers: markers.isEmpty ? Set.from(myMarker) : markers,
+        markers: markers,
         onTap: _handleTap,
       ),
     );
@@ -151,7 +155,10 @@ class _CroquisPageState extends State<CroquisPage> {
 
   _handleTap(LatLng tappedPoint) {
     setState(() {
-      myMarker = [];
+      markers.clear();
+      markers.add(Marker(
+          markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
+      myMarker.clear();
       myMarker.add(Marker(
           markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
     });
@@ -208,7 +215,7 @@ class _CroquisPageState extends State<CroquisPage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          primary: Colors.red,
+          backgroundColor: Colors.red,
           shape: const BeveledRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
@@ -223,7 +230,7 @@ class _CroquisPageState extends State<CroquisPage> {
                 "Falta fotografía", "Debes de agregar una fotografía");
           }
 
-          Navigator.pushReplacementNamed(context, "fortalezasDebilidades");
+          Navigator.pushReplacementNamed(context, "finalizar");
           setState(() {});
         },
         child: const Text("SIGUIENTE"),
@@ -244,17 +251,25 @@ class _CroquisPageState extends State<CroquisPage> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                const SizedBox(height: 20),
+                const Icon(
+                  Icons.add_photo_alternate_outlined,
+                  size: 60.0,
+                ),
+                const SizedBox(height: 30),
                 Text(
                   contenido,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 30),
               ],
             ),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Aceptar'))
+                  child: const Text(
+                    'Aceptar',
+                    style: TextStyle(color: Colors.black),
+                  ))
             ],
           );
         });

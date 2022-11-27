@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class FichasService extends ChangeNotifier {
-  final String _baseUrl = 'fichasguardadas-default-rtdb.firebaseio.com';
+  final String _baseUrl = 'fichas-3b-pruebas-default-rtdb.firebaseio.com';
   final List<FichaExistente> fichas = [];
+  late FichaExistente selectedFicha;
 
-  bool isLoading = true;
+  bool isLoading = false;
 
   Future<List<FichaExistente>> loadFichasEmpleado(List fichasEmpleado) async {
     isLoading = true;
@@ -16,10 +17,11 @@ class FichasService extends ChangeNotifier {
     for (String element in fichasEmpleado) {
       var fichaCargada = (await loadFicha(element));
       final tempFicha = FichaExistente(
-          folio: element,
-          delegacion: fichaCargada!["delegacion"],
+          folio: fichaCargada!["folio"],
+          delegacion: fichaCargada["delegacion"],
           fotoUrl: fichaCargada["fotoUrl"],
-          status: fichaCargada["status"]);
+          status: fichaCargada["status"] ?? "Sin revisar",
+          comentario: fichaCargada["comentario"] ?? "");
       fichas.add(tempFicha);
     }
     isLoading = false;

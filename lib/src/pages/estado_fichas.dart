@@ -52,6 +52,13 @@ class EstadoFichas extends StatelessWidget {
                   itemCount: fichasService.fichas.length,
                   itemBuilder: (BuildContext context, int index) =>
                       GestureDetector(
+                    onTap: fichasService.fichas[index].status != "Sin revisar"
+                        ? () {
+                            fichasService.selectedFicha =
+                                fichasService.fichas[index];
+                            Navigator.pushNamed(context, 'detalles');
+                          }
+                        : () => {},
                     child: FichasCard(
                       ficha: fichasService.fichas[index],
                     ),
