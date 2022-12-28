@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "introduction");
+          Navigator.pushNamed(context, "introduction");
         },
         child: const Text("  REGISTRA UNA FICHA  "),
       ),
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "estadoFichas");
+          Navigator.pushNamed(context, "estadoFichas");
         },
         child: const Text("ESTADO DE TUS FICHAS"),
       ),
@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.all(Radius.circular(3))),
         ),
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "lista_misiones");
+          Navigator.pushNamed(context, "lista_misiones");
         },
         child: const Text("              MISIONES            "),
       ),

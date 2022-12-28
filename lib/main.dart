@@ -1,3 +1,4 @@
+import 'package:fichas/providers/maps_provder.dart';
 import 'package:fichas/providers/providers.dart';
 import 'package:fichas/services/codigo_postal.services.dart';
 import 'package:fichas/services/fichas_services.dart';
@@ -56,6 +57,10 @@ class AppState extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => MisionesServices(),
+          // lazy: false,
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MapsProvider(),
           // lazy: false,
         )
       ],

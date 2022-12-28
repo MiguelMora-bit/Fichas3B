@@ -297,11 +297,12 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
             minimoCuadrado = 500;
           }
 
-          if (metrosCuadrados < minimoCuadrado)
+          if (metrosCuadrados < minimoCuadrado) {
             return _displayDialogAndroid(
                 datosLocalProvider.tipoInmueble, minimoCuadrado);
+          }
 
-          Navigator.pushReplacementNamed(context, "generadores");
+          Navigator.pushNamed(context, "generadores");
           _displayIntructions();
         },
         child: const Text("SIGUIENTE"),

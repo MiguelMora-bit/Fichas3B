@@ -51,13 +51,13 @@ class _SigleCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               propiedades['competidor'],
-              style: TextStyle(color: propiedades['color'], fontSize: 18),
+              style: TextStyle(color: propiedades['color'], fontSize: 15),
             ),
             const SizedBox(height: 10),
             propiedades['distancia'] != "0"
                 ? Text(
                     "A " + propiedades['distancia'] + " metros",
-                    style: TextStyle(color: propiedades['color'], fontSize: 18),
+                    style: TextStyle(color: propiedades['color'], fontSize: 15),
                   )
                 : const SizedBox(height: 10),
           ],

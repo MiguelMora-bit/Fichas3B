@@ -308,7 +308,7 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
                   fichasService.loadFichasEmpleado(
                       await empleadosService.obtenerFichasEmpleado(
                           colaboradorProvider.numeroEmpleado)),
-                  Navigator.pushReplacementNamed(context, "listadoFichas")
+                  Navigator.pushNamed(context, "listadoFichas")
                 };
         },
         child: const Text("CONFIRMAR"),

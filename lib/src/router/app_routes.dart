@@ -1,9 +1,10 @@
+import 'package:fichas/src/pages/google_maps_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fichas/src/pages/pages.dart';
 
 class AppRoutes {
-  static const initialRoute = "datosLocal";
+  static const initialRoute = "croquis";
 
   static Map<String, Widget Function(BuildContext)> routes = {
     "home": (BuildContext context) => const HomePage(),
@@ -19,5 +20,6 @@ class AppRoutes {
     "introduction": (BuildContext context) => const OnBoardingPage(),
     "detalles": (BuildContext context) => const Detalles(),
     "lista_misiones": (BuildContext context) => const ListaMisiones(),
+    "maps": (BuildContext context) => const MapSample()
   };
 }

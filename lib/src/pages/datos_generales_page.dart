@@ -107,6 +107,8 @@ class _GeneralPageState extends State<GeneralPage> {
                           getEmpleado["Nombre"];
                       _inputFieldTiendaController.text = getEmpleado["Tienda"];
                       _inputFieldCargoController.text = getEmpleado["Puesto"];
+                      _inputFieldCelularController.text =
+                          getEmpleado["celular"] ?? "";
                       _inputFieldCorreoController.text =
                           getEmpleado["correo"] ?? "";
 
@@ -341,7 +343,7 @@ class _GeneralPageState extends State<GeneralPage> {
               : colaboradorProvider.celular.isEmpty
                   ? _openDialogCelular(
                       context, colaboradorProvider, empleadosService)
-                  : Navigator.pushReplacementNamed(context, "ubicacionSitio");
+                  : Navigator.pushNamed(context, "ubicacionSitio");
         },
         child: const Text("CONFIRMAR"),
       ),

@@ -35,7 +35,7 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
               ),
               const Expanded(
                 child: FittedBox(
-                  child: Text("        COMPETENCIAS"),
+                  child: Text("COMPETENCIAS"),
                 ),
               ),
             ],
@@ -86,7 +86,7 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, "croquis");
+                    Navigator.pushNamed(context, "croquis");
                   },
                   child: const Text('Aceptar',
                       style: TextStyle(color: Colors.black))),

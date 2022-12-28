@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fichas/providers/croquis_foto_provider.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/place.dart';
+import '../../providers/maps_provder.dart';
 
 class CroquisPage extends StatefulWidget {
   const CroquisPage({Key? key}) : super(key: key);
@@ -20,11 +21,47 @@ class CroquisPage extends StatefulWidget {
 
 class _CroquisPageState extends State<CroquisPage> {
   final Completer<GoogleMapController> _controller = Completer();
-  List<Marker> myMarker = [];
   Set<Marker> markers = <Marker>{};
   Position? currenPosition;
   Marker? marcador;
-  var geoLocator = Geolocator();
+  final geoLocator = Geolocator();
+  late StreamSubscription locationSubscription;
+  late StreamSubscription markerSubscription;
+
+  @override
+  void initState() {
+    final mapsProvider = Provider.of<MapsProvider>(context, listen: false);
+
+    //Listen for selected Location
+    locationSubscription = mapsProvider.selectedLocation.stream.listen((place) {
+      _goToPlace(place);
+    });
+
+    locationSubscription = mapsProvider.selectedMarker.stream.listen((marker) {
+      markers.clear();
+      markers.add(marker);
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    locationSubscription.cancel();
+    markerSubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _goToPlace(Place place) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+            target: LatLng(
+                place.geometry.location.lat, place.geometry.location.lng),
+            zoom: 13.0),
+      ),
+    );
+  }
 
   void locatePosition(controller) async {
     bool serviceEnabled;
@@ -64,20 +101,16 @@ class _CroquisPageState extends State<CroquisPage> {
         position: LatLng(position.latitude, position.longitude));
     markers.add(marcador!);
 
-    myMarker.clear();
-    myMarker.add(Marker(
-        markerId: const MarkerId('ubicacionLocal'),
-        position: LatLng(position.latitude, position.longitude)));
-
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final croquisProvider = Provider.of<CroquisProvider>(context);
+    final mapsProvider = Provider.of<MapsProvider>(context);
 
-    const CameraPosition _puntoInicial = CameraPosition(
-      target: LatLng(23.0000000, -102.0000000),
+    CameraPosition _puntoInicial = CameraPosition(
+      target: mapsProvider.currentLocation,
       zoom: 5,
     );
     return Scaffold(
@@ -106,11 +139,14 @@ class _CroquisPageState extends State<CroquisPage> {
       body: ListView(
         children: [
           _contruirSeparador(),
-          Container(
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-              child: _construirCroquis(
-                  _puntoInicial, marcador, croquisProvider, locatePosition)),
+          InkWell(
+            onTap: () => Navigator.pushNamed(context, "maps"),
+            child: Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                child: _construirCroquis(_puntoInicial, croquisProvider,
+                    locatePosition, mapsProvider)),
+          ),
           // _construirFotoInmueble(croquisProvider),
           _contruirSeparador(),
           _fotografia(croquisProvider),
@@ -124,44 +160,26 @@ class _CroquisPageState extends State<CroquisPage> {
 
   Widget _construirCroquis(
       _puntoInicial,
-      Marker? marcador,
       CroquisProvider croquisProvider,
-      void Function(dynamic controller) locatePosition) {
-    myMarker.isNotEmpty
-        ? croquisProvider.coordenadas = myMarker[0].position.toString()
-        : null;
-
+      void Function(dynamic controller) locatePosition,
+      MapsProvider mapsProvider) {
     return SizedBox(
-      height: 700,
-      child: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: _puntoInicial,
-        myLocationButtonEnabled: true,
-        myLocationEnabled: true,
-        zoomGesturesEnabled: true,
-        zoomControlsEnabled: true,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-          locatePosition(controller);
-        },
-        // ignore: prefer_collection_literals
-        gestureRecognizers: Set()
-          ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer())),
-        markers: markers,
-        onTap: _handleTap,
+      height: 350,
+      child: AbsorbPointer(
+        absorbing: true,
+        child: GoogleMap(
+          mapType: MapType.normal,
+          mapToolbarEnabled: false,
+          zoomControlsEnabled: false,
+          initialCameraPosition: _puntoInicial,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+            locatePosition(controller);
+          },
+          markers: markers,
+        ),
       ),
     );
-  }
-
-  _handleTap(LatLng tappedPoint) {
-    setState(() {
-      markers.clear();
-      markers.add(Marker(
-          markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
-      myMarker.clear();
-      myMarker.add(Marker(
-          markerId: MarkerId(tappedPoint.toString()), position: tappedPoint));
-    });
   }
 
   Widget _fotografia(CroquisProvider croquisProvider) {
@@ -171,7 +189,8 @@ class _CroquisPageState extends State<CroquisPage> {
         alignment: AlignmentDirectional.center,
         children: [
           SizedBox(
-            height: 500,
+            height: 350,
+            width: double.infinity,
             child: croquisProvider.foto != null
                 ? Image.file(
                     File(croquisProvider.foto!.path),
@@ -185,15 +204,7 @@ class _CroquisPageState extends State<CroquisPage> {
           Center(
             child: IconButton(
               onPressed: () async {
-                final _picker = ImagePicker();
-
-                final XFile? photo =
-                    await _picker.pickImage(source: ImageSource.camera);
-
-                if (photo == null) return;
-
-                croquisProvider.foto = photo;
-                setState(() {});
+                displayDialogAndroidPhoto(croquisProvider);
               },
               icon: const Icon(Icons.camera_alt_outlined,
                   size: 45, color: Colors.black),
@@ -230,7 +241,7 @@ class _CroquisPageState extends State<CroquisPage> {
                 "Falta fotografía", "Debes de agregar una fotografía");
           }
 
-          Navigator.pushReplacementNamed(context, "finalizar");
+          Navigator.pushNamed(context, "finalizar");
           setState(() {});
         },
         child: const Text("SIGUIENTE"),
@@ -268,6 +279,93 @@ class _CroquisPageState extends State<CroquisPage> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     'Aceptar',
+                    style: TextStyle(color: Colors.black),
+                  ))
+            ],
+          );
+        });
+  }
+
+  void displayDialogAndroidPhoto(CroquisProvider croquisProvider) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(child: Text("Sube una imagen")),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    const Text("Foto desde galeria"),
+                    Semantics(
+                      label: "Desde galeria",
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.red,
+                        onPressed: () async {
+                          final _pickerGallery = ImagePicker();
+
+                          final XFile? photo = await _pickerGallery.pickImage(
+                              source: ImageSource.gallery);
+
+                          if (photo == null) return;
+                          Navigator.pop(context);
+
+                          croquisProvider.foto = photo;
+
+                          setState(() {});
+                        },
+                        heroTag: 'image0',
+                        tooltip: 'Agrega una imagen desde la galeria',
+                        child: const Icon(Icons.photo_library_outlined),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    const Text("   Toma una foto   "),
+                    Semantics(
+                      label: "Toma una fotografia",
+                      child: FloatingActionButton(
+                          backgroundColor: Colors.red,
+                          onPressed: () async {
+                            final _pickerCamera = ImagePicker();
+
+                            final XFile? photo = await _pickerCamera.pickImage(
+                                source: ImageSource.camera);
+
+                            if (photo == null) return;
+                            croquisProvider.foto = photo;
+                            Navigator.pop(context);
+
+                            setState(() {});
+                          },
+                          heroTag: 'image1',
+                          tooltip: 'Fotografia desde camara',
+                          child: const Icon(Icons.camera_alt_outlined)),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Cancelar',
                     style: TextStyle(color: Colors.black),
                   ))
             ],

@@ -31,6 +31,12 @@ class CardTable extends StatelessWidget {
         TableRow(children: [
           _SigleCard(propiedades: generadoresProvider.generadores[6]),
           _SigleCard(propiedades: generadoresProvider.generadores[7]),
+        ]),
+        TableRow(children: [
+          _SigleCard(propiedades: generadoresProvider.generadores[8]),
+          const SizedBox(
+            height: 180,
+          )
         ])
       ],
     );
@@ -58,13 +64,13 @@ class _SigleCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               propiedades['generador'],
-              style: TextStyle(color: propiedades['color'], fontSize: 18),
+              style: TextStyle(color: propiedades['color'], fontSize: 15),
             ),
             const SizedBox(height: 10),
             propiedades['distancia'] != "0"
                 ? Text(
                     "A " + propiedades['distancia'] + " metros",
-                    style: TextStyle(color: propiedades['color'], fontSize: 18),
+                    style: TextStyle(color: propiedades['color'], fontSize: 16),
                   )
                 : const SizedBox(height: 10),
           ],

@@ -40,7 +40,7 @@ dependencies:
   provider: ^6.0.1
   http: ^0.13.4
   google_maps_flutter: ^2.2.1
-  image_picker: ^0.8.4+4
+  image_picker: ^0.8.6
   timer_builder: ^2.0.0
   geolocator: ^8.0.3
   cached_network_image: ^3.2.0

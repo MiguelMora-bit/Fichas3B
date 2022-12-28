@@ -396,7 +396,7 @@ Widget _boton(ubicacionProvider, context) {
       onPressed: () {
         FocusScope.of(context).unfocus();
         if (!ubicacionProvider.isValidForm()) return;
-        Navigator.pushReplacementNamed(context, "datosLocal");
+        Navigator.pushNamed(context, "datosLocal");
       },
       child: const Text("SIGUIENTE"),
     ),

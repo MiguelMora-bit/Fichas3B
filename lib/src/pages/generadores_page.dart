@@ -35,7 +35,7 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
               ),
               const Expanded(
                 child: FittedBox(
-                  child: Text("        GENERADORES"),
+                  child: Text("GENERADORES"),
                 ),
               ),
             ],
@@ -86,7 +86,7 @@ class _GeneradoresPageState extends State<GeneradoresPage> {
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, "competencias");
+                    Navigator.pushNamed(context, "competencias");
                     _displayDialogIntrucciones();
                   },
                   child: const Text('Aceptar',

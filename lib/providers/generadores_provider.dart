@@ -51,7 +51,7 @@ class GeneradoresProvider extends ChangeNotifier {
       "identificador": 5,
       "color": Colors.black,
       "imagePath": "assets/oficina.jpg",
-      "generador": 'Oficina',
+      "generador": 'Oficina de gobierno',
       "distancia": "0",
       "activo": false,
     },
@@ -66,11 +66,19 @@ class GeneradoresProvider extends ChangeNotifier {
     {
       "identificador": 7,
       "color": Colors.black,
+      "imagePath": "assets/banco.jpg",
+      "generador": 'Banco',
+      "distancia": "0",
+      "activo": false,
+    },
+    {
+      "identificador": 8,
+      "color": Colors.black,
       "imagePath": "assets/hospital.jpg",
       "generador": 'Hospital',
       "distancia": "0",
       "activo": false,
-    }
+    },
   ];
 
   cambiarElemento(identificador, distancia, activo) {
