@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fichas/providers/croquis_foto_provider.dart';
@@ -63,28 +64,7 @@ class _CroquisPageState extends State<CroquisPage> {
     );
   }
 
-  void locatePosition(controller) async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
+  void locatePosition(controller, Position position) async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     currenPosition = position;
@@ -102,6 +82,44 @@ class _CroquisPageState extends State<CroquisPage> {
     markers.add(marcador!);
 
     setState(() {});
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -161,7 +179,7 @@ class _CroquisPageState extends State<CroquisPage> {
   Widget _construirCroquis(
       _puntoInicial,
       CroquisProvider croquisProvider,
-      void Function(dynamic controller) locatePosition,
+      void Function(dynamic controller, Position position) locatePosition,
       MapsProvider mapsProvider) {
     return SizedBox(
       height: 350,
@@ -172,9 +190,23 @@ class _CroquisPageState extends State<CroquisPage> {
           mapToolbarEnabled: false,
           zoomControlsEnabled: false,
           initialCameraPosition: _puntoInicial,
-          onMapCreated: (GoogleMapController controller) {
+          onMapCreated: (GoogleMapController controller) async {
             _controller.complete(controller);
-            locatePosition(controller);
+            try {
+              final currentPosition = await _determinePosition();
+
+              croquisProvider.coordenadas = "";
+
+              locatePosition(controller, currentPosition);
+            } catch (e) {
+              displayDialogAndroid(
+                  "Sin ubicación",
+                  "Marca la ubicación de maner manual",
+                  const Icon(
+                    Icons.location_off_outlined,
+                    size: 60.0,
+                  ));
+            }
           },
           markers: markers,
         ),
@@ -224,21 +256,27 @@ class _CroquisPageState extends State<CroquisPage> {
   Widget _boton(CroquisProvider croquisProvider) {
     return Center(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
         onPressed: () {
           if (croquisProvider.coordenadas == null) {
             return displayDialogAndroid(
-                "Falta ubicación", "Debes de crear un marcador de ubicación");
+              "Falta ubicación",
+              "Debes de crear un marcador de ubicación",
+              const Icon(
+                Icons.location_off_outlined,
+                size: 60.0,
+              ),
+            );
           }
 
           if (croquisProvider.foto == null) {
             return displayDialogAndroid(
-                "Falta fotografía", "Debes de agregar una fotografía");
+              "Falta fotografía",
+              "Debes de agregar una fotografía",
+              const Icon(
+                Icons.add_photo_alternate_outlined,
+                size: 60.0,
+              ),
+            );
           }
 
           Navigator.pushNamed(context, "finalizar");
@@ -249,7 +287,7 @@ class _CroquisPageState extends State<CroquisPage> {
     );
   }
 
-  void displayDialogAndroid(String mensaje, String contenido) {
+  void displayDialogAndroid(String mensaje, String contenido, Icon icono) {
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -263,10 +301,7 @@ class _CroquisPageState extends State<CroquisPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 20),
-                const Icon(
-                  Icons.add_photo_alternate_outlined,
-                  size: 60.0,
-                ),
+                icono,
                 const SizedBox(height: 30),
                 Text(
                   contenido,
@@ -311,17 +346,20 @@ class _CroquisPageState extends State<CroquisPage> {
                       child: FloatingActionButton(
                         backgroundColor: Colors.red,
                         onPressed: () async {
-                          final _pickerGallery = ImagePicker();
+                          try {
+                            final pickerGallery = ImagePicker();
 
-                          final XFile? photo = await _pickerGallery.pickImage(
-                              source: ImageSource.gallery);
+                            final XFile? photo = await pickerGallery.pickImage(
+                                source: ImageSource.gallery);
 
-                          if (photo == null) return;
-                          Navigator.pop(context);
+                            if (photo == null) return;
+                            Navigator.pop(context);
 
-                          croquisProvider.foto = photo;
+                            croquisProvider.foto = photo;
 
-                          setState(() {});
+                            setState(() {});
+                            // ignore: empty_catches
+                          } catch (e) {}
                         },
                         heroTag: 'image0',
                         tooltip: 'Agrega una imagen desde la galeria',
@@ -342,16 +380,35 @@ class _CroquisPageState extends State<CroquisPage> {
                       child: FloatingActionButton(
                           backgroundColor: Colors.red,
                           onPressed: () async {
-                            final _pickerCamera = ImagePicker();
+                            try {
+                              final _pickerCamera = ImagePicker();
 
-                            final XFile? photo = await _pickerCamera.pickImage(
-                                source: ImageSource.camera);
+                              final XFile? photo = await _pickerCamera
+                                  .pickImage(source: ImageSource.camera);
 
-                            if (photo == null) return;
-                            croquisProvider.foto = photo;
-                            Navigator.pop(context);
+                              if (photo == null) return;
 
-                            setState(() {});
+                              final bytes = File(photo.path).readAsBytesSync();
+
+                              String base64Image = base64Encode(bytes);
+
+                              croquisProvider.foto = photo;
+                              croquisProvider.fotoBase64 = base64Image;
+
+                              Navigator.pop(context);
+
+                              setState(() {});
+                            } catch (e) {
+                              Navigator.pop(context);
+
+                              displayDialogAndroid(
+                                  "Sin acceso a camara",
+                                  "Sube una foto desde tu galeria",
+                                  const Icon(
+                                    Icons.photo_size_select_actual_rounded,
+                                    size: 60.0,
+                                  ));
+                            }
                           },
                           heroTag: 'image1',
                           tooltip: 'Fotografia desde camara',

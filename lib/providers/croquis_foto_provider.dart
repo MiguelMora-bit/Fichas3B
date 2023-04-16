@@ -4,4 +4,5 @@ import 'package:image_picker/image_picker.dart';
 class CroquisProvider extends ChangeNotifier {
   String? coordenadas;
   XFile? foto;
+  String? fotoBase64;
 }

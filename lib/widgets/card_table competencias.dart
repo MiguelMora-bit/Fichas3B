@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
 import 'package:provider/provider.dart';
 
 import '../providers/competencias_provider.dart';
@@ -17,13 +16,20 @@ class CardTableCompetencias extends StatelessWidget {
       children: [
         TableRow(children: [
           _SigleCard(
+            key: const Key("sigleCardComp_1"),
             propiedades: competenciasProvider.competencias[0],
           ),
-          _SigleCard(propiedades: competenciasProvider.competencias[1]),
+          _SigleCard(
+              key: const Key("sigleCardComp_2"),
+              propiedades: competenciasProvider.competencias[1]),
         ]),
         TableRow(children: [
-          _SigleCard(propiedades: competenciasProvider.competencias[2]),
-          _SigleCard(propiedades: competenciasProvider.competencias[3]),
+          _SigleCard(
+              key: const Key("sigleCardComp_3"),
+              propiedades: competenciasProvider.competencias[2]),
+          _SigleCard(
+              key: const Key("sigleCardComp_4"),
+              propiedades: competenciasProvider.competencias[3]),
         ])
       ],
     );

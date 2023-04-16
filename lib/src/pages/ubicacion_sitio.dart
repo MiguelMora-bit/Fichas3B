@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/codigo_postal.services.dart';
+import '../Theme/light_theme.dart';
 
 class UbicacionSitioPage extends StatefulWidget {
   const UbicacionSitioPage({Key? key}) : super(key: key);
@@ -20,22 +21,20 @@ class _UbicacionSitioPageState extends State<UbicacionSitioPage> {
     final codigoPostalServices = Provider.of<CodigoPostalServices>(context);
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.red,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
               "assets/Logo3B.png",
-              height: 50.0,
-              width: 50.0,
+              height: 40.0,
+              width: 40.0,
             ),
             Container(
-              width: 50,
+              width: 60,
             ),
             const Expanded(
               child: FittedBox(
-                child: Text("     UBICACIÓN DEL SITIO"),
+                child: Text("UBICACIÓN DEL SITIO"),
               ),
             ),
           ],
@@ -76,48 +75,24 @@ class _UbicacionSitioPageState extends State<UbicacionSitioPage> {
 
     final barrios = codigoPostalServices.devolverBarrios();
     if (barrios.length == 1) {
-      final TextEditingController _inputFieldColoniaController =
+      final TextEditingController inputFieldColoniaController =
           TextEditingController();
 
-      _inputFieldColoniaController.text = barrios[0];
+      inputFieldColoniaController.text = barrios[0];
       ubicacionProvider.colonia = barrios[0];
 
-      return TextField(
+      return TextFormField(
         readOnly: true,
-        controller: _inputFieldColoniaController,
+        controller: inputFieldColoniaController,
         enableInteractiveSelection: false,
-        decoration: InputDecoration(
-          prefixIcon: const Padding(
-            padding: EdgeInsets.all(0.2),
-            child: Icon(
-              Icons.location_on_outlined,
-              color: Colors.grey,
-            ),
-          ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-          labelText: "Colonia o barrio",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.location_on_outlined, label: "Colonia o barrio"),
       );
     } else {
       return DropdownButtonFormField<String>(
         menuMaxHeight: 500,
-        decoration: InputDecoration(
-          prefixIcon: const Padding(
-            padding: EdgeInsets.all(0.2),
-            child: Icon(
-              Icons.location_on_outlined,
-              color: Colors.grey,
-            ),
-          ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-          labelText: "Colonia o barrio",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.location_on_outlined, label: "Colonia o barrio"),
         onChanged: (String? newValue) {
           ubicacionProvider.colonia = newValue;
           setState(() {
@@ -144,48 +119,24 @@ class _UbicacionSitioPageState extends State<UbicacionSitioPage> {
 
     final delegaciones = codigoPostalServices.devolverDelegacion();
     if (delegaciones.length == 1) {
-      final TextEditingController _inputFieldDelegacionesController =
+      final TextEditingController inputFieldDelegacionesController =
           TextEditingController();
 
-      _inputFieldDelegacionesController.text = delegaciones[0];
+      inputFieldDelegacionesController.text = delegaciones[0];
       ubicacionProvider.delegacion = delegaciones[0];
 
-      return TextField(
+      return TextFormField(
         readOnly: true,
-        controller: _inputFieldDelegacionesController,
+        controller: inputFieldDelegacionesController,
         enableInteractiveSelection: false,
-        decoration: InputDecoration(
-          prefixIcon: const Padding(
-            padding: EdgeInsets.all(0.2),
-            child: Icon(
-              Icons.location_on_outlined,
-              color: Colors.grey,
-            ),
-          ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-          labelText: "Delegacion o municipio",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.location_on_outlined, label: "Delegacion o municipio"),
       );
     } else {
       return DropdownButtonFormField<String>(
         menuMaxHeight: 500,
-        decoration: InputDecoration(
-          prefixIcon: const Padding(
-            padding: EdgeInsets.all(0.2),
-            child: Icon(
-              Icons.location_on_outlined,
-              color: Colors.grey,
-            ),
-          ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-          labelText: "Delegacion o municipio",
-          labelStyle: const TextStyle(
-            color: Colors.black,
-          ),
-        ),
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.location_on_outlined, label: "Delegacion o municipio"),
         onChanged: (newValue) {
           ubicacionProvider.delegacion = newValue!;
           setState(() {
@@ -215,20 +166,8 @@ Widget _contruirSeparador() {
 
 Widget _crearInputDireccion(ubicacionProvider) {
   return TextFormField(
-    decoration: InputDecoration(
-      prefixIcon: const Padding(
-        padding: EdgeInsets.all(0.2),
-        child: Icon(
-          Icons.location_on_outlined,
-          color: Colors.grey,
-        ),
-      ),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-      labelText: "Dirección",
-      labelStyle: const TextStyle(
-        color: Colors.black,
-      ),
-    ),
+    decoration: AppTheme.customImputDecoration(
+        icono: Icons.location_on_outlined, label: "Dirección"),
     onChanged: (value) => ubicacionProvider.direccion = value,
     validator: (value) {
       return value!.isEmpty ? "Debes de ingresar la dirección" : null;
@@ -270,21 +209,8 @@ Widget _crearInputEntreCalles(ubicacionProvider) {
         height: 10,
       ),
       TextFormField(
-          decoration: InputDecoration(
-            prefixIcon: const Padding(
-              padding: EdgeInsets.all(0.2),
-              child: Icon(
-                Icons.location_on_outlined,
-                color: Colors.grey,
-              ),
-            ),
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-            labelText: "Calle",
-            labelStyle: const TextStyle(
-              color: Colors.black,
-            ),
-          ),
+          decoration: AppTheme.customImputDecoration(
+              icono: Icons.location_on_outlined, label: "Calle"),
           onChanged: (value) => ubicacionProvider.calle2 = value,
           validator: (value) {
             return value!.isEmpty ? "Debes de ingresar la calle" : null;
@@ -350,20 +276,8 @@ Widget _crearInputCodigoPostal(UbicacionSitioProvider ubicacionProvider,
       maxLength: 5,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.location_on_outlined,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Código postal",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
+      decoration: AppTheme.customImputDecoration(
+          icono: Icons.location_on_outlined, label: "Código postal"),
       onChanged: (value) async {
         if (value.length == 4 || value.length == 5) {
           ubicacionProvider.codigoPostal = value;
@@ -387,12 +301,6 @@ Widget _crearInputCodigoPostal(UbicacionSitioProvider ubicacionProvider,
 Widget _boton(ubicacionProvider, context) {
   return Center(
     child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        backgroundColor: Colors.red,
-        shape: const BeveledRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(3))),
-      ),
       onPressed: () {
         FocusScope.of(context).unfocus();
         if (!ubicacionProvider.isValidForm()) return;

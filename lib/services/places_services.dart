@@ -7,7 +7,7 @@ import '../models/place.dart';
 import '../models/place_search.dart';
 
 class PlacesServices extends ChangeNotifier {
-  final key = 'AIzaSyChqpiBpLI59w7JBWoDyB3SbRJCr4N7ens';
+  final key = 'AIzaSyCweHT6Yc4TFlpVX893QZNBuGU8J5DJZUk';
 
   Future<List<PlaceSearch>> getAutocomplete(String search) async {
     var url =

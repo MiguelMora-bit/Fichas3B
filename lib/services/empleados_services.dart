@@ -6,7 +6,7 @@ class EmpleadosServices extends ChangeNotifier {
   List<String> fichasVacias = [];
 
   bool isLoading = true;
-  final String _baseUrl = "fichas-3b-pruebas-default-rtdb.firebaseio.com";
+  final String _baseUrl = "acquired-jet-303917-default-rtdb.firebaseio.com";
 
   Future<Map<String, dynamic>?> loadEmpleado(numEmpleado, context) async {
     isLoading = true;

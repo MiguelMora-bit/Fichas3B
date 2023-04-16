@@ -20,7 +20,6 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
   late StreamSubscription locationSubscription;
-  late StreamSubscription boundsSubscription;
   late StreamSubscription markerSubscription;
   final _locationController = TextEditingController();
 
@@ -74,28 +73,7 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  void locatePosition(controller) async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
+  void locatePosition(controller, Position position) async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     currenPosition = position;
@@ -111,7 +89,45 @@ class MapSampleState extends State<MapSample> {
         markerId: const MarkerId('ubicacionLocal'),
         position: LatLng(position.latitude, position.longitude));
     markers.add(marcador!);
+
     setState(() {});
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -135,9 +151,13 @@ class MapSampleState extends State<MapSample> {
                   : 13,
             ),
             zoomGesturesEnabled: true,
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (GoogleMapController controller) async {
               _controller.complete(controller);
-              // locatePosition(controller);
+              try {
+                final currentPosition = await _determinePosition();
+                // locatePosition(controller, currentPosition);
+                // ignore: empty_catches
+              } catch (e) {}
             },
             markers: markers,
             onTap: _handleTap,

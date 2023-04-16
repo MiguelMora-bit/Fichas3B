@@ -32,7 +32,12 @@ def keystoreProperties = new Properties()
    }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
+
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false //<- add this line
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

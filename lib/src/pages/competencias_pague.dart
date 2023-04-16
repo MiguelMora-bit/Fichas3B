@@ -8,7 +8,9 @@ class CompetenciasPage extends StatefulWidget {
   const CompetenciasPage({Key? key}) : super(key: key);
 
   @override
-  _CompetenciasPageState createState() => _CompetenciasPageState();
+  State<StatefulWidget> createState() {
+    return _CompetenciasPageState();
+  }
 }
 
 class _CompetenciasPageState extends State<CompetenciasPage> {
@@ -20,8 +22,6 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
 
     return Scaffold(
         appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: Colors.red,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -31,7 +31,7 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
                 width: 50.0,
               ),
               Container(
-                width: 120,
+                width: 60,
               ),
               const Expanded(
                 child: FittedBox(
@@ -98,12 +98,6 @@ class _CompetenciasPageState extends State<CompetenciasPage> {
   Widget _boton(CompetenciasProvider competenciasProvider) {
     return Center(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
         onPressed: () {
           displayDialogConfirmation();
         },

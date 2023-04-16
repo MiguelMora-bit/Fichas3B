@@ -1,4 +1,5 @@
 import 'package:fichas/providers/providers.dart';
+import 'package:fichas/src/theme/light_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +26,8 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
           children: [
             Image.asset(
               "assets/Logo3B.png",
-              height: 50.0,
-              width: 50.0,
+              height: 40.0,
+              width: 40.0,
             ),
             Container(
               width: 35,
@@ -77,20 +78,8 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
 
   Widget _crearInputPropietario(datosLocalProvider) {
     return TextFormField(
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.person_outline,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Propietario",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
+      decoration: AppTheme.customImputDecoration(
+          icono: Icons.person_outline, label: "Propietario"),
       onChanged: (value) => datosLocalProvider.propietario = value,
       validator: (value) {
         return value!.isEmpty
@@ -135,20 +124,8 @@ class _DatosLocalPageState extends State<DatosLocalPage> {
     return TextFormField(
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.attach_money_outlined,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: tipo,
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
+      decoration: AppTheme.customImputDecoration(
+          icono: Icons.attach_money_outlined, label: ""),
       onChanged: (value) => datosLocalProvider.costo = value,
       validator: (value) {
         return value!.isEmpty ? "Debes de ingresar un valor" : null;

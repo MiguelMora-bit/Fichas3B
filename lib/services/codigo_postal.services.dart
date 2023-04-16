@@ -19,9 +19,9 @@ class CodigoPostalServices extends ChangeNotifier {
       cargando(context, 'Buscando informacion del codigo postal');
       final url = Uri.https(_baseUrl, "/postales/$codigoPostal.json");
       final resp = await http.get(url);
-      var _data = jsonDecode(resp.body);
-      _data ??= [];
-      for (var codigo in _data) {
+      var data = jsonDecode(resp.body);
+      data ??= [];
+      for (var codigo in data) {
         if (!listaBarrios.contains(codigo["barrio"])) {
           listaBarrios.add(codigo["barrio"]);
         }

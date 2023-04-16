@@ -1,4 +1,6 @@
 import 'package:fichas/services/fichas_services.dart';
+import 'package:fichas/src/theme/light_theme.dart';
+import 'package:fichas/widgets/customTextFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +33,9 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
   final TextEditingController _inputFieldCorreoController =
       TextEditingController();
 
+  final TextEditingController _inputFieldCelularController =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final empleadosService = Provider.of<EmpleadosServices>(context);
@@ -41,8 +46,6 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.red,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -75,12 +78,6 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
               visible: isVisibleSiguiente,
               child: Center(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    backgroundColor: Colors.red,
-                    shape: const BeveledRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(3))),
-                  ),
                   onPressed: () async {
                     FocusScope.of(context).unfocus();
 
@@ -100,12 +97,15 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
                     colaboradorProvider.tienda = getEmpleado["Tienda"];
                     colaboradorProvider.correoElectronico =
                         getEmpleado["correo"] ?? "";
+                    colaboradorProvider.celular = getEmpleado["celular"] ?? "";
 
                     setState(() {
                       _inputFieldColaboradorController.text =
                           getEmpleado["Nombre"];
                       _inputFieldTiendaController.text = getEmpleado["Tienda"];
                       _inputFieldCargoController.text = getEmpleado["Puesto"];
+                      _inputFieldCelularController.text =
+                          getEmpleado["celular"] ?? "";
                       _inputFieldCorreoController.text =
                           getEmpleado["correo"] ?? "";
 
@@ -242,21 +242,26 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
     );
   }
 
-  Widget _crearInputPuesto() {
+  Widget _crearInputCelular(ColaboradorProvider colaboradorProvider,
+      EmpleadosServices empleadosService) {
     return TextField(
-      enableInteractiveSelection: false,
       readOnly: true,
-      controller: _inputFieldCargoController,
+      controller: _inputFieldCelularController,
       decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.work_outline_outlined,
-            color: Colors.grey,
+        suffixIcon: IconButton(
+          icon: const Icon(
+            Icons.edit,
           ),
+          onPressed: () => {
+            _openDialogCelular(context, colaboradorProvider, empleadosService)
+          },
+        ),
+        prefixIcon: const Icon(
+          Icons.phone_android_outlined,
+          color: Colors.black,
         ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Puesto",
+        labelText: "Numero celular",
         labelStyle: const TextStyle(
           color: Colors.black,
         ),
@@ -264,15 +269,19 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
     );
   }
 
+  Widget _crearInputPuesto() {
+    return TextFormField(
+      enableInteractiveSelection: false,
+      readOnly: true,
+      controller: _inputFieldCargoController,
+      decoration: AppTheme.customImputDecoration(
+          icono: Icons.work_outline_outlined, label: "Puesto"),
+    );
+  }
+
   Widget _botonRegresar() {
     return Center(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
         onPressed: () {
           FocusScope.of(context).unfocus();
           setState(() {
@@ -294,12 +303,6 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
       FichasService fichasService) {
     return Center(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
         onPressed: () async {
           colaboradorProvider.correoElectronico.isEmpty
               ? _openDialogCorreo(
@@ -331,8 +334,91 @@ class _ColaboradorStadoPageState extends State<ColaboradorStadoPage> {
           _contruirSeparador(),
           if (colaboradorProvider.correoElectronico.isNotEmpty)
             _crearInputCorreo(colaboradorProvider, empleadosService),
+          if (colaboradorProvider.celular.isNotEmpty) ...[
+            _contruirSeparador(),
+            _crearInputCelular(colaboradorProvider, empleadosService),
+          ]
         ],
       ),
+    );
+  }
+
+  void _openDialogCelular(context, ColaboradorProvider colaboradorProvider,
+      EmpleadosServices empleadosService) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (celularContext) {
+          return AlertDialog(
+            elevation: 5,
+            title: const Center(child: Text('Telefono celular')),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.circular(15)),
+            content: Form(
+              key: colaboradorProvider.formKeyCelular,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(width: MediaQuery.of(context).size.width - 2),
+                  const Text(
+                    "Ingresa tu numero de celular",
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _crearInputSolicitarCelular(colaboradorProvider),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(color: Colors.black),
+                  )),
+              TextButton(
+                  onPressed: () async {
+                    FocusScope.of(context).unfocus();
+
+                    if (!colaboradorProvider.isValidFormCelular()) return;
+
+                    Navigator.pop(celularContext);
+
+                    final bool responseCelular =
+                        await empleadosService.updateCelular(
+                            colaboradorProvider.numeroEmpleado,
+                            colaboradorProvider.celular,
+                            context);
+
+                    if (!responseCelular) {
+                      return displayDialogInternet();
+                    }
+
+                    _inputFieldCelularController.text =
+                        colaboradorProvider.celular;
+
+                    setState(() {});
+                  },
+                  child: const Text('Agregar',
+                      style: TextStyle(color: Colors.black)))
+            ],
+          );
+        });
+  }
+
+  Widget _crearInputSolicitarCelular(ColaboradorProvider colaboradorProvider) {
+    return TextFormField(
+      decoration: AppTheme.customImputDecoration(
+        icono: Icons.phone_android,
+        label: "Celular",
+      ),
+      onChanged: (value) => colaboradorProvider.celular = value,
+      validator: (value) {
+        return value!.isEmpty ? "Debes de ingresar tu número celular" : null;
+      },
     );
   }
 

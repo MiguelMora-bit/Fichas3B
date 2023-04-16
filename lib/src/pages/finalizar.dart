@@ -53,7 +53,7 @@ class _FinalizarPageState extends State<FinalizarPage> {
             ),
             const Expanded(
               child: FittedBox(
-                child: Text("          FINALIZAR"),
+                child: Text("  FINALIZAR  "),
               ),
             ),
           ],
@@ -170,6 +170,7 @@ class _FinalizarPageState extends State<FinalizarPage> {
                       colaboradorProvider.numeroEmpleado, fichas);
 
                   Navigator.of(context).pop();
+                  displayDialogAndroid(context, "Folio_123");
 
                   displayDialogAndroid(context, nuevaFicha.folio);
                 } catch (e) {

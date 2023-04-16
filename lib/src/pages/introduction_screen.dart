@@ -69,11 +69,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
         ),
         PageViewModel(
           title: "Competencias",
-          bodyWidget: const Text(
-            "Todo aquel comercio con un giro similar que puede: \n -Robar nuestros clientes potenciales. \n -Ser un generador para ganar clientes que actualmente asisten a ese comercio \n \n IMPORTANTE: \n Si hay competencia cercana esto no impide que se pueda abrir una Tienda 3B",
-            style: TextStyle(fontSize: 17),
-            textAlign: TextAlign.center,
-          ),
+          body:
+              "Todo aquel comercio con un giro similar que puede: \n -Robar nuestros clientes potenciales. \n -Ser un generador para ganar clientes que actualmente asisten a ese comercio \n \n IMPORTANTE: \n Si hay competencia cercana esto no impide que se pueda abrir una Tienda 3B",
           image: _buildImage('competencias.jpg'),
           decoration: pageDecoration,
         ),

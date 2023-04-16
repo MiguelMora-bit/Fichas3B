@@ -16,24 +16,41 @@ class CardTable extends StatelessWidget {
       children: [
         TableRow(children: [
           _SigleCard(
+            key: const Key("sigleCard_1"),
             propiedades: generadoresProvider.generadores[0],
           ),
-          _SigleCard(propiedades: generadoresProvider.generadores[1]),
+          _SigleCard(
+              key: const Key("sigleCard_2"),
+              propiedades: generadoresProvider.generadores[1]),
         ]),
         TableRow(children: [
-          _SigleCard(propiedades: generadoresProvider.generadores[2]),
-          _SigleCard(propiedades: generadoresProvider.generadores[3]),
+          _SigleCard(
+              key: const Key("sigleCard_3"),
+              propiedades: generadoresProvider.generadores[2]),
+          _SigleCard(
+              key: const Key("sigleCard_4"),
+              propiedades: generadoresProvider.generadores[3]),
         ]),
         TableRow(children: [
-          _SigleCard(propiedades: generadoresProvider.generadores[4]),
-          _SigleCard(propiedades: generadoresProvider.generadores[5]),
+          _SigleCard(
+              key: const Key("sigleCard_5"),
+              propiedades: generadoresProvider.generadores[4]),
+          _SigleCard(
+              key: const Key("sigleCard_6"),
+              propiedades: generadoresProvider.generadores[5]),
         ]),
         TableRow(children: [
-          _SigleCard(propiedades: generadoresProvider.generadores[6]),
-          _SigleCard(propiedades: generadoresProvider.generadores[7]),
+          _SigleCard(
+              key: const Key("sigleCard_7"),
+              propiedades: generadoresProvider.generadores[6]),
+          _SigleCard(
+              key: const Key("sigleCard_8"),
+              propiedades: generadoresProvider.generadores[7]),
         ]),
         TableRow(children: [
-          _SigleCard(propiedades: generadoresProvider.generadores[8]),
+          _SigleCard(
+              key: const Key("sigleCard_9"),
+              propiedades: generadoresProvider.generadores[8]),
           const SizedBox(
             height: 180,
           )

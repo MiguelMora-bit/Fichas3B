@@ -1,3 +1,5 @@
+import 'package:fichas/widgets/customAppbar.dart';
+import 'package:fichas/widgets/customTextFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -5,11 +7,15 @@ import 'package:provider/provider.dart';
 import 'package:fichas/providers/colaborador_provider.dart';
 import 'package:fichas/services/empleados_services.dart';
 
+import '../Theme/light_theme.dart';
+
 class GeneralPage extends StatefulWidget {
   const GeneralPage({Key? key}) : super(key: key);
 
   @override
-  _GeneralPageState createState() => _GeneralPageState();
+  State<StatefulWidget> createState() {
+    return _GeneralPageState();
+  }
 }
 
 class _GeneralPageState extends State<GeneralPage> {
@@ -40,47 +46,18 @@ class _GeneralPageState extends State<GeneralPage> {
     final colaboradorProvider = Provider.of<ColaboradorProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.red,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Image.asset(
-              "assets/Logo3B.png",
-              height: 50.0,
-              width: 50.0,
-            ),
-            Container(
-              width: 50,
-            ),
-            const Expanded(
-              child: FittedBox(
-                child: Text("DATOS DEL COLABORADOR"),
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppBar(title: const CustomAppBar(name: "DATOS DEL COLABORADOR")),
       body: Form(
         key: colaboradorProvider.formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+        child: Column(
           children: [
             _crearInputNumEmpleado(colaboradorProvider),
             _datosEmpleado(colaboradorProvider, empleadosService),
-            _contruirSeparador(),
             Visibility(
               visible: isVisibleSiguiente,
               child: Center(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    backgroundColor: Colors.red,
-                    shape: const BeveledRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(3))),
-                  ),
                   onPressed: () async {
                     FocusScope.of(context).unfocus();
 
@@ -122,7 +99,6 @@ class _GeneralPageState extends State<GeneralPage> {
                 ),
               ),
             ),
-            _contruirSeparador(),
             _botones(context, colaboradorProvider, empleadosService)
           ],
         ),
@@ -130,89 +106,41 @@ class _GeneralPageState extends State<GeneralPage> {
     );
   }
 
-  Widget _contruirSeparador() {
-    return Container(
-      height: 20,
-    );
-  }
-
   Widget _crearInputColaborador() {
-    return TextField(
+    return CustomTextFormField(
       readOnly: true,
       controller: _inputFieldColaboradorController,
-      enableInteractiveSelection: false,
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.person_outline,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Nombre",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
+      decoration: AppTheme.customImputDecoration(
+          icono: Icons.person_outline, label: 'Nombre'),
     );
   }
 
   Widget _crearInputNumEmpleado(colaboradorProvider) {
-    return TextFormField(
-      enableInteractiveSelection: false,
-      readOnly: isReadNumEmpleado,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.emoji_people_outlined,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Número de empleado",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
-      onChanged: (value) => colaboradorProvider.numeroEmpleado = value,
-      validator: (value) {
-        return value!.isEmpty
-            ? "Debes de ingresar el número de empleado"
-            : null;
-      },
-    );
+    return CustomTextFormField(
+        readOnly: isReadNumEmpleado,
+        onChanged: (value) => colaboradorProvider.numeroEmpleado = value,
+        validator: (value) {
+          return (value == null || value.isEmpty)
+              ? "Debes de ingresar el número de empleado"
+              : null;
+        },
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+        textInputType: TextInputType.number,
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.account_box_outlined, label: "Número de empleado"));
   }
 
   Widget _crearInputTienda() {
-    return TextField(
-      enableInteractiveSelection: false,
-      readOnly: true,
-      controller: _inputFieldTiendaController,
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.store_outlined,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Tienda",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
-    );
+    return CustomTextFormField(
+        readOnly: true,
+        controller: _inputFieldTiendaController,
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.store_outlined, label: "Tienda"));
   }
 
   Widget _crearInputCorreo(ColaboradorProvider colaboradorProvider,
       EmpleadosServices empleadosService) {
-    return TextField(
-      enableInteractiveSelection: false,
+    return CustomTextFormField(
       readOnly: true,
       controller: _inputFieldCorreoController,
       decoration: InputDecoration(
@@ -221,7 +149,6 @@ class _GeneralPageState extends State<GeneralPage> {
           child: IconButton(
             icon: const Icon(
               Icons.edit,
-              color: Colors.grey,
             ),
             onPressed: () => {
               _openDialogCorreo(context, colaboradorProvider, empleadosService)
@@ -232,7 +159,6 @@ class _GeneralPageState extends State<GeneralPage> {
           padding: EdgeInsets.all(0.2),
           child: Icon(
             Icons.email_outlined,
-            color: Colors.grey,
           ),
         ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
@@ -246,29 +172,21 @@ class _GeneralPageState extends State<GeneralPage> {
 
   Widget _crearInputCelular(ColaboradorProvider colaboradorProvider,
       EmpleadosServices empleadosService) {
-    return TextField(
-      enableInteractiveSelection: false,
+    return CustomTextFormField(
       readOnly: true,
       controller: _inputFieldCelularController,
       decoration: InputDecoration(
-        suffixIcon: Padding(
-          padding: const EdgeInsets.all(0.2),
-          child: IconButton(
-            icon: const Icon(
-              Icons.edit,
-              color: Colors.grey,
-            ),
-            onPressed: () => {
-              _openDialogCelular(context, colaboradorProvider, empleadosService)
-            },
+        suffixIcon: IconButton(
+          icon: const Icon(
+            Icons.edit,
           ),
+          onPressed: () => {
+            _openDialogCelular(context, colaboradorProvider, empleadosService)
+          },
         ),
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.phone_android_outlined,
-            color: Colors.grey,
-          ),
+        prefixIcon: const Icon(
+          Icons.phone_android_outlined,
+          color: Colors.black,
         ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
         labelText: "Numero celular",
@@ -280,36 +198,16 @@ class _GeneralPageState extends State<GeneralPage> {
   }
 
   Widget _crearInputPuesto() {
-    return TextField(
-      enableInteractiveSelection: false,
-      readOnly: true,
-      controller: _inputFieldCargoController,
-      decoration: InputDecoration(
-        prefixIcon: const Padding(
-          padding: EdgeInsets.all(0.2),
-          child: Icon(
-            Icons.work_outline_outlined,
-            color: Colors.grey,
-          ),
-        ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Puesto",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
-    );
+    return CustomTextFormField(
+        readOnly: true,
+        controller: _inputFieldCargoController,
+        decoration: AppTheme.customImputDecoration(
+            icono: Icons.work_outline_outlined, label: "Puesto"));
   }
 
   Widget _botonRegresar() {
     return Center(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
         onPressed: () {
           FocusScope.of(context).unfocus();
           setState(() {
@@ -330,12 +228,6 @@ class _GeneralPageState extends State<GeneralPage> {
       EmpleadosServices empleadosService) {
     return Center(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: Colors.red,
-          shape: const BeveledRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(3))),
-        ),
         onPressed: () {
           colaboradorProvider.correoElectronico.isEmpty
               ? _openDialogCorreo(
@@ -356,16 +248,11 @@ class _GeneralPageState extends State<GeneralPage> {
       visible: isVisible,
       child: Column(
         children: [
-          _contruirSeparador(),
           _crearInputColaborador(),
-          _contruirSeparador(),
           _crearInputPuesto(),
-          _contruirSeparador(),
           _crearInputTienda(),
-          _contruirSeparador(),
           if (colaboradorProvider.correoElectronico.isNotEmpty)
             _crearInputCorreo(colaboradorProvider, empleadosService),
-          _contruirSeparador(),
           if (colaboradorProvider.celular.isNotEmpty)
             _crearInputCelular(colaboradorProvider, empleadosService),
         ],
@@ -563,13 +450,8 @@ class _GeneralPageState extends State<GeneralPage> {
   Widget _crearInputSolicitarCorreo(ColaboradorProvider colaboradorProvider) {
     return TextFormField(
       enableInteractiveSelection: false,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Correo electronico",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
-      ),
+      decoration: AppTheme.customImputDecoration(
+          icono: Icons.email_outlined, label: "Correo electronico"),
       onChanged: (value) => colaboradorProvider.correoElectronico = value,
       validator: (value) {
         return value!.isEmpty
@@ -583,13 +465,9 @@ class _GeneralPageState extends State<GeneralPage> {
 
   Widget _crearInputSolicitarCelular(ColaboradorProvider colaboradorProvider) {
     return TextFormField(
-      enableInteractiveSelection: false,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
-        labelText: "Celular",
-        labelStyle: const TextStyle(
-          color: Colors.black,
-        ),
+      decoration: AppTheme.customImputDecoration(
+        icono: Icons.phone_android,
+        label: "Celular",
       ),
       onChanged: (value) => colaboradorProvider.celular = value,
       validator: (value) {
